@@ -13,21 +13,24 @@
 
 const int WindowWidth = 1280;
 const int WindowHeight = 720;
-const std::string WindowTitle = "GIM Flight Sim";
+const std::string WindowTitle = "Karibi";
 const float TargetFPS = 60.0f;
 const float TargetFrameTime = 1.0f / TargetFPS;
 
 void FramebufferSizeCallback(GLFWwindow* window, int width, int height)
 {
 	glViewport(0, 0, width, height);
-
 }
 
 static void
-KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mode) {
+KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mode)
+{
 	bool IsDown = action == GLFW_PRESS || action == GLFW_REPEAT;
-	switch (key) {
-	case GLFW_KEY_ESCAPE: glfwSetWindowShouldClose(window, GLFW_TRUE); break;
+	switch (key)
+	{
+	case GLFW_KEY_ESCAPE: 
+		glfwSetWindowShouldClose(window, GLFW_TRUE);
+		break;
 	}
 }
 
@@ -38,7 +41,8 @@ ErrorCallback(int error, const char* description) {
 
 int main() {
 	GLFWwindow* Window = 0;
-	if (!glfwInit()) {
+	if (!glfwInit()) 
+	{
 		std::cerr << "Failed to init glfw" << std::endl;
 		return -1;
 	}
@@ -49,7 +53,8 @@ int main() {
 	glfwSetErrorCallback(ErrorCallback);
 
 	Window = glfwCreateWindow(WindowWidth, WindowHeight, WindowTitle.c_str(), 0, 0);
-	if (!Window) {
+	if (!Window) 
+	{
 		std::cerr << "Failed to create window" << std::endl;
 		glfwTerminate();
 		return -1;
@@ -60,7 +65,8 @@ int main() {
 	glfwSetFramebufferSizeCallback(Window, FramebufferSizeCallback);
 
 	GLenum GlewError = glewInit();
-	if (GlewError != GLEW_OK) {
+	if (GlewError != GLEW_OK) 
+	{
 		std::cerr << "Failed to init glew: " << glewGetErrorString(GlewError) << std::endl;
 		glfwTerminate();
 		return -1;
@@ -89,7 +95,8 @@ int main() {
 		-0.2,  0.2, -0.2,   0, 0, 0
 	};
 
-	unsigned int cubeIndices[] = {
+	unsigned int cubeIndices[] = 
+	{
 		0, 1, 2,
 		2, 3, 0,
 
@@ -108,7 +115,8 @@ int main() {
 		3, 2, 6,
 		6, 7, 3
 	};
-	float triangleVertices[] = {
+	float triangleVertices[] = 
+	{
 		-0.5f, -0.5f, 0.0f, 0.0, 0.0, 0.0,
 		 0.5f, -0.5f, 0.0f, 0.0, 0.0, 0.0,
 		 0.0f,  0.5f, 0.0f, 0.0, 0.0, 0.0,
@@ -140,6 +148,7 @@ int main() {
 		glfwPollEvents();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		// Exit buttons
 		if (glfwGetKey(Window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		{
 			glfwSetWindowShouldClose(Window, GL_TRUE);
@@ -175,6 +184,7 @@ int main() {
 			glEnable(GL_CULL_FACE);
 			glCullFace(GL_BACK);
 		}
+
 		// Sun part 1
 		Basic.SetColor(1, 0.5 + abs(sin(glfwGetTime() * 5)), 0);
 		m = glm::translate(glm::mat4(1.0f), glm::vec3(+1.9, 1.2, -0.4));
@@ -248,7 +258,7 @@ int main() {
 		Basic.SetModel(m);
 		cube.Render();
 
-		// IronMan model
+		// Iron Man model
 		Basic.SetColor(1, 0, 0);
 		m = glm::translate(glm::mat4(1.0f), glm::vec3(0.2, 0.20, -1.0));
 		m = glm::scale(m, glm::vec3(0.002));
@@ -263,7 +273,7 @@ int main() {
 		Basic.SetModel(m);
 		cube.Render();
 
-		// Left leaf of the palm
+		// Left leaf of the palm tree
 		Basic.SetColor(0.00, 0.31, 0.04);
 		m = glm::translate(glm::mat4(1.0f), glm::vec3(0.2, 1.05, -0.5));
 		m = glm::scale(m, glm::vec3(0.5, 0.7, 1));
@@ -272,7 +282,7 @@ int main() {
 		Basic.SetModel(m);
 		triangle.Render();
 
-		// Right leaf of the palm
+		// Right leaf of the palm tree
 		Basic.SetColor(0.00, 0.31, 0.04);
 		m = glm::translate(glm::mat4(1.0f), glm::vec3(-0.2, 1.06, -0.5));
 		m = glm::scale(m, glm::vec3(0.5, 0.7, 1));
@@ -281,7 +291,7 @@ int main() {
 		Basic.SetModel(m);
 		triangle.Render();
 
-		// Center leaf of the palm
+		// Center leaf of the palm tree
 		Basic.SetColor(0.00, 0.31, 0.04);
 		m = glm::translate(glm::mat4(1.0f), glm::vec3(0.0, 1.06, -0.7));
 		m = glm::scale(m, glm::vec3(0.2, 0.7, 1));

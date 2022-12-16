@@ -22,26 +22,26 @@ void FramebufferSizeCallback(GLFWwindow* window, int width, int height)
 	glViewport(0, 0, width, height);
 }
 
-static void
-KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mode)
+static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
 	bool IsDown = action == GLFW_PRESS || action == GLFW_REPEAT;
 	switch (key)
 	{
-	case GLFW_KEY_ESCAPE: 
+	case GLFW_KEY_ESCAPE:
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
 		break;
 	}
 }
 
-static void
-ErrorCallback(int error, const char* description) {
+static void ErrorCallback(int error, const char* description)
+{
 	std::cerr << "GLFW Error: " << description << std::endl;
 }
 
-int main() {
+int main()
+{
 	GLFWwindow* Window = 0;
-	if (!glfwInit()) 
+	if (!glfwInit())
 	{
 		std::cerr << "Failed to init glfw" << std::endl;
 		return -1;
@@ -53,7 +53,7 @@ int main() {
 	glfwSetErrorCallback(ErrorCallback);
 
 	Window = glfwCreateWindow(WindowWidth, WindowHeight, WindowTitle.c_str(), 0, 0);
-	if (!Window) 
+	if (!Window)
 	{
 		std::cerr << "Failed to create window" << std::endl;
 		glfwTerminate();
@@ -65,7 +65,7 @@ int main() {
 	glfwSetFramebufferSizeCallback(Window, FramebufferSizeCallback);
 
 	GLenum GlewError = glewInit();
-	if (GlewError != GLEW_OK) 
+	if (GlewError != GLEW_OK)
 	{
 		std::cerr << "Failed to init glew: " << glewGetErrorString(GlewError) << std::endl;
 		glfwTerminate();
@@ -95,7 +95,7 @@ int main() {
 		-0.2,  0.2, -0.2,   0, 0, 0
 	};
 
-	unsigned int cubeIndices[] = 
+	unsigned int cubeIndices[] =
 	{
 		0, 1, 2,
 		2, 3, 0,
@@ -115,7 +115,7 @@ int main() {
 		3, 2, 6,
 		6, 7, 3
 	};
-	float triangleVertices[] = 
+	float triangleVertices[] =
 	{
 		-0.5f, -0.5f, 0.0f, 0.0, 0.0, 0.0,
 		 0.5f, -0.5f, 0.0f, 0.0, 0.0, 0.0,
@@ -144,7 +144,8 @@ int main() {
 	bool clouds_visibility = true;
 	bool culling = true;
 
-	while (!glfwWindowShouldClose(Window)) {
+	while (!glfwWindowShouldClose(Window))
+	{
 		glfwPollEvents();
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -310,7 +311,8 @@ int main() {
 
 		FrameEndTime = glfwGetTime();
 		dt = FrameEndTime - FrameStartTime;
-		if (dt < TargetFPS) {
+		if (dt < TargetFPS)
+		{
 			int DeltaMS = (int)((TargetFrameTime - dt) * 1e3f);
 			std::this_thread::sleep_for(std::chrono::milliseconds(DeltaMS));
 		}

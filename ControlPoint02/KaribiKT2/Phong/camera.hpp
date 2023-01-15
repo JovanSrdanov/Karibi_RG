@@ -25,6 +25,8 @@ public:
      * @param dt Delta time
      */
     void Move(float dx, float dy, float dt);
+
+    void UpDown(int direction);
     /**
      * @brief Rotates camera depending on difference between previous and current cursor position
      *

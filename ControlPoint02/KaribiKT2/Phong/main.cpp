@@ -13,6 +13,9 @@
 #include "texture.hpp"
 
 
+#define _USE_MATH_DEFINES
+
+
 float
 Clamp(float x, float min, float max) {
 	return x < min ? min : x > max ? max : x;
@@ -34,6 +37,8 @@ struct Input {
 	bool LookRight;
 	bool LookUp;
 	bool LookDown;
+	bool GoUp;
+	bool GoDown;
 };
 
 struct EngineState {
@@ -66,10 +71,10 @@ KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mode) {
 	case GLFW_KEY_UP: UserInput->LookUp = IsDown; break;
 	case GLFW_KEY_DOWN: UserInput->LookDown = IsDown; break;
 
-	case GLFW_KEY_1: State->mShadingMode = 0; break;
-	case GLFW_KEY_2: State->mShadingMode = 1; break;
-	case GLFW_KEY_3: State->mShadingMode = 2; break;
-	case GLFW_KEY_4: State->mShadingMode = 3; break;
+	case GLFW_KEY_SPACE: UserInput->GoUp = IsDown; break;
+	case GLFW_KEY_C: UserInput->GoDown = IsDown; break;
+
+
 
 	case GLFW_KEY_L: {
 		if (IsDown) {
@@ -102,6 +107,10 @@ HandleInput(EngineState* state) {
 	if (UserInput->LookRight) FPSCamera->Rotate(-1.0f, 0.0f, state->mDT);
 	if (UserInput->LookDown) FPSCamera->Rotate(0.0f, -1.0f, state->mDT);
 	if (UserInput->LookUp) FPSCamera->Rotate(0.0f, 1.0f, state->mDT);
+
+	if (UserInput->GoUp) FPSCamera->UpDown(1);
+	if (UserInput->GoDown) FPSCamera->UpDown(-1);
+
 }
 
 
@@ -118,12 +127,13 @@ DrawSea(unsigned vao, const Shader& shader, unsigned diffuse, unsigned specular)
 	for (int i = -seaSize; i < seaSize; ++i) {
 		for (int j = -seaSize; j < seaSize; ++j) {
 			glm::mat4 Model(1.0f);
-			Model = glm::translate(Model, glm::vec3(i * Size, (abs(sin(glfwGetTime()*2)) )-Size*1.2, j * Size));
+			Model = glm::translate(Model, glm::vec3(i * Size, (abs(sin(glfwGetTime() * 2))) - Size * 1.2, j * Size));
 			Model = glm::scale(Model, glm::vec3(Size, Size, Size));
 			shader.SetModel(Model);
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
 	}
+
 
 }
 
@@ -239,50 +249,37 @@ int main() {
 	glUseProgram(PhongShaderMaterialTexture.GetId());
 
 	// Light from the sky 
-	float light_from_sky = 0.4f;
+	float light_from_sky = 0.7f;
 	PhongShaderMaterialTexture.SetUniform3f("uDirLight.Direction", glm::vec3(0.0f));
 	PhongShaderMaterialTexture.SetUniform3f("uDirLight.Ka", glm::vec3(light_from_sky));
 	PhongShaderMaterialTexture.SetUniform3f("uDirLight.Kd", glm::vec3(light_from_sky));
 	PhongShaderMaterialTexture.SetUniform3f("uDirLight.Ks", glm::vec3(light_from_sky));
 
 
-	// Light from the sun
-	PhongShaderMaterialTexture.SetUniform3f("uPointLight.Ka", glm::vec3(1.00, 0.98, 0.54));
+	// Default for point light
+	PhongShaderMaterialTexture.SetUniform3f("uPointLight.Ka", glm::vec3(1.00, 0.97, 0.00));
 	PhongShaderMaterialTexture.SetUniform3f("uPointLight.Kd", glm::vec3(1.00, 0.97, 0.00));
 	PhongShaderMaterialTexture.SetUniform3f("uPointLight.Ks", glm::vec3(1.0f));
 	PhongShaderMaterialTexture.SetUniform1f("uPointLight.Kc", 1.0f);
-	PhongShaderMaterialTexture.SetUniform1f("uPointLight.Kl", 0.01f);
+	PhongShaderMaterialTexture.SetUniform1f("uPointLight.Kl", 0.001f);
 	PhongShaderMaterialTexture.SetUniform1f("uPointLight.Kq", 0.01f);
 
-
-	//Light from the torch
-	PhongShaderMaterialTexture.SetUniform3f("uTorchLight.Ka", glm::vec3(1.00, 0, 0.00));
-	PhongShaderMaterialTexture.SetUniform3f("uTorchLight.Kd", glm::vec3(1.00, 0, 0.00));
-	PhongShaderMaterialTexture.SetUniform3f("uTorchLight.Ks", glm::vec3(1.0f));
-	PhongShaderMaterialTexture.SetUniform1f("uTorchLight.Kc", 1.0f);
-	PhongShaderMaterialTexture.SetUniform1f("uTorchLight.Kl", 0.01f);
-	PhongShaderMaterialTexture.SetUniform1f("uTorchLight.Kq", 0.01f);
-
-
-
-
-
 	//Light from the Lighthouse
-	PhongShaderMaterialTexture.SetUniform3f("uSpotlight.Position", glm::vec3(0.0f, 3.5f, -2.0f));
-	PhongShaderMaterialTexture.SetUniform3f("uSpotlight.Direction", glm::vec3(0.0f, -1.0f, 1.0f));
-	PhongShaderMaterialTexture.SetUniform3f("uSpotlight.Ka", glm::vec3(0.2f, 0.0f, 0.0f));
-	PhongShaderMaterialTexture.SetUniform3f("uSpotlight.Kd", glm::vec3(0.5f, 0.0f, 0.0f));
+	PhongShaderMaterialTexture.SetUniform3f("uSpotlight.Position", glm::vec3(999));
+	PhongShaderMaterialTexture.SetUniform3f("uSpotlight.Direction", glm::vec3(999));
+	PhongShaderMaterialTexture.SetUniform3f("uSpotlight.Ka", glm::vec3(1.0f, 1.0f, 1.0f));
+	PhongShaderMaterialTexture.SetUniform3f("uSpotlight.Kd", glm::vec3(1.0f, 1.0f, 1.0f));
 	PhongShaderMaterialTexture.SetUniform3f("uSpotlight.Ks", glm::vec3(1.0f));
 	PhongShaderMaterialTexture.SetUniform1f("uSpotlight.Kc", 1.0f);
-	PhongShaderMaterialTexture.SetUniform1f("uSpotlight.Kl", 0.292f);
-	PhongShaderMaterialTexture.SetUniform1f("uSpotlight.Kq", 0.032f);
-	PhongShaderMaterialTexture.SetUniform1f("uSpotlight.InnerCutOff", glm::cos(glm::radians(12.5f)));
-	PhongShaderMaterialTexture.SetUniform1f("uSpotlight.OuterCutOff", glm::cos(glm::radians(17.5f)));
-	// NOTE(Jovan): Diminishes the light's diffuse component by half, tinting it slightly red
+	PhongShaderMaterialTexture.SetUniform1f("uSpotlight.Kl", 0.092f);
+	PhongShaderMaterialTexture.SetUniform1f("uSpotlight.Kq", 0.002f);
+	PhongShaderMaterialTexture.SetUniform1f("uSpotlight.InnerCutOff", glm::cos(glm::radians(25.5f)));
+	PhongShaderMaterialTexture.SetUniform1f("uSpotlight.OuterCutOff", glm::cos(glm::radians(30.5f)));
+
+	// Materials
 	PhongShaderMaterialTexture.SetUniform1i("uMaterial.Kd", 0);
-	// NOTE(Jovan): Makes the object really shiny
 	PhongShaderMaterialTexture.SetUniform1i("uMaterial.Ks", 1);
-	PhongShaderMaterialTexture.SetUniform1f("uMaterial.Shininess", 128.0f);
+	PhongShaderMaterialTexture.SetUniform1f("uMaterial.Shininess", 1024.0f);
 	glUseProgram(0);
 
 	glm::mat4 Projection = glm::perspective(45.0f, WindowWidth / (float)WindowHeight, 0.1f, 100.0f);
@@ -294,17 +291,23 @@ int main() {
 	float EndTime = glfwGetTime();
 	glClearColor(0.53, 0.81, 0.98, 1.0);
 
-
-	unsigned SeaDiffuseTexture = Texture::LoadImageToTexture("res/sea_d.jpg");
-	unsigned SeaSpecularTexture = Texture::LoadImageToTexture("res/sea_s.jpg");
 	unsigned SunDiffuseTexture = Texture::LoadImageToTexture("res/sun.jpg");
 	unsigned SandDiffuseTexture = Texture::LoadImageToTexture("res/sand.jpg");
 	unsigned RockDiffuseTexture = Texture::LoadImageToTexture("res/rock.jpg");
-	unsigned LighthouseDiffuseTexture = Texture::LoadImageToTexture("res/Lighthouse.jpg");
+	unsigned LighthouseDiffuseTexture = Texture::LoadImageToTexture("res/lighthouse.jpg");
 	unsigned LighthouseLampDiffuseTexture = Texture::LoadImageToTexture("res/lighthouseLamp.jpg");
 	unsigned CloudDiffuseTexture = Texture::LoadImageToTexture("res/cloud.jpg");
+	unsigned PalmTreeDiffuseTexture = Texture::LoadImageToTexture("res/palmTree.jpg");
+	unsigned PalmLeafDiffuseTexture = Texture::LoadImageToTexture("res/palmLeaf.jpg");
+	unsigned SeaDiffuseTexture = Texture::LoadImageToTexture("res/sea_d.jpg");
+	unsigned SeaSpecularTexture = Texture::LoadImageToTexture("res/sea_s.jpg");
 
 	Shader* CurrentShader = &PhongShaderMaterialTexture;
+
+	bool clouds_and_lighthouse_light_visibility = true;
+
+	float PI= atan(1) * 4;
+
 	while (!glfwWindowShouldClose(Window)) {
 		glfwPollEvents();
 		HandleInput(&State);
@@ -316,47 +319,30 @@ int main() {
 		CurrentShader->SetProjection(Projection);
 		CurrentShader->SetView(View);
 		CurrentShader->SetUniform3f("uViewPos", FPSCamera.GetPosition());
-		// Sea
-		ModelMatrix = glm::mat4(1.0f);
-		CurrentShader->SetModel(ModelMatrix);
-		DrawSea(CubeVAO, *CurrentShader, SeaDiffuseTexture, SeaSpecularTexture);
 
+		if (glfwGetKey(Window, GLFW_KEY_P) == GLFW_PRESS)
+		{
+			clouds_and_lighthouse_light_visibility = false;
+		}
+		if (glfwGetKey(Window, GLFW_KEY_O) == GLFW_PRESS)
+		{
+			clouds_and_lighthouse_light_visibility = true;
+		}
 
 		// Sun
-		glm::vec3 PointLightPosition(0, 10.0f, 0);
+		glm::vec3 PointLightPosition(15, 10.0f, 0);
 		CurrentShader->SetUniform3f("uPointLight.Position", PointLightPosition);
 		ModelMatrix = glm::mat4(1.0f);
 		ModelMatrix = glm::translate(ModelMatrix, PointLightPosition);
+		ModelMatrix = glm::scale(ModelMatrix, glm::vec3(7));
 		CurrentShader->SetModel(ModelMatrix);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, SunDiffuseTexture);
 		glBindVertexArray(CubeVAO);
 		glDrawArrays(GL_TRIANGLES, 0, CubeVertices.size() / 8);
 
-		// Big cloud
-		ModelMatrix = glm::mat4(1.0f);
-		ModelMatrix = glm::translate(ModelMatrix, glm::vec3(-7.0f, 5.0f, -20.0f));
-		ModelMatrix = glm::rotate(ModelMatrix, glm::radians((float)glfwGetTime() * 30), glm::vec3(1, 1, 1.5));
-		ModelMatrix = glm::scale(ModelMatrix, glm::vec3(3));
-		ModelMatrix = glm::rotate(ModelMatrix, glm::radians((float)glfwGetTime() * 60), glm::vec3(0.5, 1, 1));
-		CurrentShader->SetModel(ModelMatrix);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, CloudDiffuseTexture);
-		glBindVertexArray(CubeVAO);
-		glDrawArrays(GL_TRIANGLES, 0, CubeVertices.size() / 8);
-
-		// Small cloud
-		ModelMatrix = glm::mat4(1.0f);
-		ModelMatrix = glm::translate(ModelMatrix, glm::vec3(7.1f, 5.2f, -21.0f));
-		ModelMatrix = glm::rotate(ModelMatrix, glm::radians((float)glfwGetTime() * 30), glm::vec3(0.5, 1, 1));
-		ModelMatrix = glm::scale(ModelMatrix, glm::vec3(1,2,3));
-		ModelMatrix = glm::rotate(ModelMatrix, glm::radians((float)glfwGetTime() * 30), glm::vec3(0.5, 1, 1));
-		CurrentShader->SetModel(ModelMatrix);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, CloudDiffuseTexture);
-		glBindVertexArray(CubeVAO);
-		glDrawArrays(GL_TRIANGLES, 0, CubeVertices.size() / 8);
-
+		//Sea
+		DrawSea(CubeVAO, *CurrentShader, SeaDiffuseTexture, SeaSpecularTexture);
 
 		// Small island (Far)
 		ModelMatrix = glm::mat4(1.0f);
@@ -388,6 +374,62 @@ int main() {
 		glBindVertexArray(CubeVAO);
 		glDrawArrays(GL_TRIANGLES, 0, CubeVertices.size() / 8);
 
+		// Palm tree
+		ModelMatrix = glm::mat4(1.0f);
+		ModelMatrix = glm::translate(ModelMatrix, glm::vec3(0.0f, 1.5f, 0.0f));
+		ModelMatrix = glm::scale(ModelMatrix, glm::vec3(1, 10, 1));
+		CurrentShader->SetModel(ModelMatrix);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, PalmTreeDiffuseTexture);
+		glBindVertexArray(CubeVAO);
+		glDrawArrays(GL_TRIANGLES, 0, CubeVertices.size() / 8);
+
+		// Palm tree top leaf
+		ModelMatrix = glm::mat4(1.0f);
+		ModelMatrix = glm::translate(ModelMatrix, glm::vec3(0.0f, 6.0f, 0.0f));
+		ModelMatrix = glm::scale(ModelMatrix, glm::vec3(2));
+		ModelMatrix = glm::rotate(ModelMatrix, glm::radians(45.0f), glm::vec3(0, 1, 0));
+		CurrentShader->SetModel(ModelMatrix);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, PalmLeafDiffuseTexture);
+		glBindVertexArray(CubeVAO);
+		glDrawArrays(GL_TRIANGLES, 0, CubeVertices.size() / 8);
+
+		// Palm tree leaf 1
+		ModelMatrix = glm::mat4(1.0f);
+		ModelMatrix = glm::translate(ModelMatrix, glm::vec3(1.5f, 4.75f, -1.5f));
+		ModelMatrix = glm::rotate(ModelMatrix, glm::radians(45.0f), glm::vec3(0, 1, 0));
+		ModelMatrix = glm::rotate(ModelMatrix, glm::radians(45.0f), glm::vec3(0, 0, 1));
+		ModelMatrix = glm::scale(ModelMatrix, glm::vec3(0.1, 6, 1.75));
+		CurrentShader->SetModel(ModelMatrix);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, PalmLeafDiffuseTexture);
+		glBindVertexArray(CubeVAO);
+		glDrawArrays(GL_TRIANGLES, 0, CubeVertices.size() / 8);
+
+		// Palm tree leaf 2
+		ModelMatrix = glm::mat4(1.0f);
+		ModelMatrix = glm::translate(ModelMatrix, glm::vec3(-1.0f, 4.75f, -1.0));
+		ModelMatrix = glm::rotate(ModelMatrix, glm::radians(135.0f), glm::vec3(0, 1, 0));
+		ModelMatrix = glm::rotate(ModelMatrix, glm::radians(45.0f), glm::vec3(0, 0, 1));
+		ModelMatrix = glm::scale(ModelMatrix, glm::vec3(0.1, 6, 1.75));
+		CurrentShader->SetModel(ModelMatrix);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, PalmLeafDiffuseTexture);
+		glBindVertexArray(CubeVAO);
+		glDrawArrays(GL_TRIANGLES, 0, CubeVertices.size() / 8);
+
+		// Palm tree leaf 3
+		ModelMatrix = glm::mat4(1.0f);
+		ModelMatrix = glm::translate(ModelMatrix, glm::vec3(1.75f, 4.75f, 1.75));
+		ModelMatrix = glm::rotate(ModelMatrix, glm::radians(-45.0f), glm::vec3(0, 1, 0));
+		ModelMatrix = glm::rotate(ModelMatrix, glm::radians(45.0f), glm::vec3(0, 0, 1));
+		ModelMatrix = glm::scale(ModelMatrix, glm::vec3(0.1, 6, 1.75));
+		CurrentShader->SetModel(ModelMatrix);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, PalmLeafDiffuseTexture);
+		glBindVertexArray(CubeVAO);
+		glDrawArrays(GL_TRIANGLES, 0, CubeVertices.size() / 8);
 
 		// Island for lighthouse 
 		ModelMatrix = glm::mat4(1.0f);
@@ -399,62 +441,82 @@ int main() {
 		glBindVertexArray(CubeVAO);
 		glDrawArrays(GL_TRIANGLES, 0, CubeVertices.size() / 8);
 
+		// Lighthouse Top
+		ModelMatrix = glm::mat4(1.0f);
+		ModelMatrix = glm::translate(ModelMatrix, glm::vec3(-2.0f, 1.5f, -15.0f));
+		ModelMatrix = glm::scale(ModelMatrix, glm::vec3(1, 1, 1));
+		CurrentShader->SetModel(ModelMatrix);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, LighthouseDiffuseTexture);
+		glBindVertexArray(CubeVAO);
+		glDrawArrays(GL_TRIANGLES, 0, CubeVertices.size() / 8);
 
-		// Lighthouse
+		// Lighthouse Middle
+		ModelMatrix = glm::mat4(1.0f);
+		ModelMatrix = glm::translate(ModelMatrix, glm::vec3(-2.0f, 0.5f, -15.0f));
+		ModelMatrix = glm::scale(ModelMatrix, glm::vec3(1.0));
+		CurrentShader->SetModel(ModelMatrix);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, LighthouseDiffuseTexture);
+		glBindVertexArray(CubeVAO);
+		glDrawArrays(GL_TRIANGLES, 0, CubeVertices.size() / 8);
 
-			// Top
-			ModelMatrix = glm::mat4(1.0f);
-			ModelMatrix = glm::translate(ModelMatrix, glm::vec3(-2.0f, 1.5f, -15.0f));
-			ModelMatrix = glm::scale(ModelMatrix, glm::vec3(1,1,1));
-			CurrentShader->SetModel(ModelMatrix);
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, LighthouseDiffuseTexture);
-			glBindVertexArray(CubeVAO);
-			glDrawArrays(GL_TRIANGLES, 0, CubeVertices.size() / 8);
+		// Lighthouse Bottom
+		ModelMatrix = glm::mat4(1.0f);
+		ModelMatrix = glm::translate(ModelMatrix, glm::vec3(-2.0f, -0.5f, -15.0f));
+		ModelMatrix = glm::scale(ModelMatrix, glm::vec3(1, 1, 1));
+		CurrentShader->SetModel(ModelMatrix);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, LighthouseDiffuseTexture);
+		glBindVertexArray(CubeVAO);
+		glDrawArrays(GL_TRIANGLES, 0, CubeVertices.size() / 8);
 
-			// Middle
-			ModelMatrix = glm::mat4(1.0f);
-			ModelMatrix = glm::translate(ModelMatrix, glm::vec3(-2.0f, 0.5f, -15.0f));
-			ModelMatrix = glm::scale(ModelMatrix, glm::vec3(1, 1, 1));
-			CurrentShader->SetModel(ModelMatrix);
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, LighthouseDiffuseTexture);
-			glBindVertexArray(CubeVAO);
-			glDrawArrays(GL_TRIANGLES, 0, CubeVertices.size() / 8);
+		// Lighthouse Lamp
 
-			// Bottom
-			ModelMatrix = glm::mat4(1.0f);
-			ModelMatrix = glm::translate(ModelMatrix, glm::vec3(-2.0f, -0.5f, -15.0f));
-			ModelMatrix = glm::scale(ModelMatrix, glm::vec3(1, 1, 1));
-			CurrentShader->SetModel(ModelMatrix);
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, LighthouseDiffuseTexture);
-			glBindVertexArray(CubeVAO);
-			glDrawArrays(GL_TRIANGLES, 0, CubeVertices.size() / 8);
-
-		
-
-		// Lamp
 		ModelMatrix = glm::mat4(1.0f);
 		ModelMatrix = glm::translate(ModelMatrix, glm::vec3(-2.0f, 2.5f, -15.0f));
 		ModelMatrix = glm::scale(ModelMatrix, glm::vec3(1.42));
-		ModelMatrix = glm::rotate(ModelMatrix, glm::radians((float)glfwGetTime() * 30), glm::vec3(0, 1, 0));
+
+		float time = glfwGetTime();
+		ModelMatrix = glm::rotate(ModelMatrix, glm::radians(time * 30), glm::vec3(0, 1, 0));
 		CurrentShader->SetModel(ModelMatrix);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, LighthouseLampDiffuseTexture);
 		glBindVertexArray(CubeVAO);
 		glDrawArrays(GL_TRIANGLES, 0, CubeVertices.size() / 8);
 
+		if (clouds_and_lighthouse_light_visibility)
+		{
 
+			CurrentShader->SetUniform3f("uSpotlight.Position", glm::vec3(-2.0f, 2.7f, -15.0f));
+			float lightHouseLightRotationSpeed=(PI/180.0)*30;
+			CurrentShader->SetUniform3f("uSpotlight.Direction", glm::vec3(sin(time * lightHouseLightRotationSpeed), -0.3, cos(time * lightHouseLightRotationSpeed)));
+			
 
-	
-	
-	
+			// Fixed size cloud
+			ModelMatrix = glm::mat4(1.0f);
+			ModelMatrix = glm::translate(ModelMatrix, glm::vec3(-7.0f, 5.0f, -20.0f));
+			ModelMatrix = glm::rotate(ModelMatrix, glm::radians((float)glfwGetTime() * 60), glm::vec3(0.5, 1, 1));
+			ModelMatrix = glm::scale(ModelMatrix, glm::vec3(3, 1, 1));
+			CurrentShader->SetModel(ModelMatrix);
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, CloudDiffuseTexture);
+			glBindVertexArray(CubeVAO);
+			glDrawArrays(GL_TRIANGLES, 0, CubeVertices.size() / 8);
 
-	
+			// Changing size cloud
+			ModelMatrix = glm::mat4(1.0f);
+			ModelMatrix = glm::translate(ModelMatrix, glm::vec3(7.1f, 5.2f, -21.0f));
+			ModelMatrix = glm::rotate(ModelMatrix, glm::radians((float)glfwGetTime() * 30), glm::vec3(0.5, 1, 1));
+			ModelMatrix = glm::scale(ModelMatrix, glm::vec3(abs(sin(glfwGetTime())) * 2 + 2, abs(sin(glfwGetTime() * 2)) * 2 + 2, abs(sin(glfwGetTime())) + 2));
+			ModelMatrix = glm::rotate(ModelMatrix, glm::radians((float)glfwGetTime() * 30), glm::vec3(0.5, 1, 1));
+			CurrentShader->SetModel(ModelMatrix);
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, CloudDiffuseTexture);
+			glBindVertexArray(CubeVAO);
+			glDrawArrays(GL_TRIANGLES, 0, CubeVertices.size() / 8);
+		}
 
-
-	
 
 		glBindVertexArray(0);
 		glUseProgram(0);

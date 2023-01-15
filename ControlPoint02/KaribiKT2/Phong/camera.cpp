@@ -19,6 +19,12 @@ Camera::Move(float dx, float dy, float dt) {
     updateVectors();
 }
 
+void
+Camera::UpDown(int direction) {
+    mPlayerHeight = mPlayerHeight + direction;
+    updateVectors();
+}
+
 void 
 Camera::Rotate(float dx, float dy, float dt) {
     float RotateVelocity = mLookSpeed * dt;

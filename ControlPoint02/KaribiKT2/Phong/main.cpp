@@ -299,7 +299,7 @@ int main()
 	PhongShaderMaterialTexture.SetUniform1f("uLighthouseLight1.Kl", 0.0092f);
 	PhongShaderMaterialTexture.SetUniform1f("uLighthouseLight1.Kq", 0.0002f);
 	PhongShaderMaterialTexture.SetUniform1f("uLighthouseLight1.InnerCutOff", glm::cos(glm::radians(25.5f)));
-	PhongShaderMaterialTexture.SetUniform1f("uLighthouseLight1.OuterCutOff", glm::cos(glm::radians(27.5f)));
+	PhongShaderMaterialTexture.SetUniform1f("uLighthouseLight1.OuterCutOff", glm::cos(glm::radians(57.5f)));
 
 	//Second light from the Lighthouse 
 	PhongShaderMaterialTexture.SetUniform3f("uLighthouseLight2.Position", glm::vec3(999));
@@ -311,7 +311,7 @@ int main()
 	PhongShaderMaterialTexture.SetUniform1f("uLighthouseLight2.Kl", 0.0092f);
 	PhongShaderMaterialTexture.SetUniform1f("uLighthouseLight2.Kq", 0.0002f);
 	PhongShaderMaterialTexture.SetUniform1f("uLighthouseLight2.InnerCutOff", glm::cos(glm::radians(25.5f)));
-	PhongShaderMaterialTexture.SetUniform1f("uLighthouseLight2.OuterCutOff", glm::cos(glm::radians(27.5f)));
+	PhongShaderMaterialTexture.SetUniform1f("uLighthouseLight2.OuterCutOff", glm::cos(glm::radians(57.5f)));
 
 	// Materials
 	PhongShaderMaterialTexture.SetUniform1i("uMaterial.Kd", 0);

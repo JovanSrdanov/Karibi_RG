@@ -255,31 +255,30 @@ int main() {
 	PhongShaderMaterialTexture.SetUniform3f("uDirLight.Kd", glm::vec3(light_from_sky));
 	PhongShaderMaterialTexture.SetUniform3f("uDirLight.Ks", glm::vec3(light_from_sky));
 
-
 	// Default for point light
 	PhongShaderMaterialTexture.SetUniform3f("uPointLight.Ka", glm::vec3(1.00, 0.97, 0.00));
 	PhongShaderMaterialTexture.SetUniform3f("uPointLight.Kd", glm::vec3(1.00, 0.97, 0.00));
 	PhongShaderMaterialTexture.SetUniform3f("uPointLight.Ks", glm::vec3(1.0f));
 	PhongShaderMaterialTexture.SetUniform1f("uPointLight.Kc", 1.0f);
-	PhongShaderMaterialTexture.SetUniform1f("uPointLight.Kl", 0.001f);
-	PhongShaderMaterialTexture.SetUniform1f("uPointLight.Kq", 0.01f);
+	PhongShaderMaterialTexture.SetUniform1f("uPointLight.Kl", 0.01f);
+	PhongShaderMaterialTexture.SetUniform1f("uPointLight.Kq", 0.005f);
 
-	//Light from the Lighthouse
+	//First light from the Lighthouse 
 	PhongShaderMaterialTexture.SetUniform3f("uSpotlight.Position", glm::vec3(999));
 	PhongShaderMaterialTexture.SetUniform3f("uSpotlight.Direction", glm::vec3(999));
-	PhongShaderMaterialTexture.SetUniform3f("uSpotlight.Ka", glm::vec3(1.0f, 1.0f, 1.0f));
-	PhongShaderMaterialTexture.SetUniform3f("uSpotlight.Kd", glm::vec3(1.0f, 1.0f, 1.0f));
+	PhongShaderMaterialTexture.SetUniform3f("uSpotlight.Ka", glm::vec3(0));
+	PhongShaderMaterialTexture.SetUniform3f("uSpotlight.Kd", glm::vec3(1));
 	PhongShaderMaterialTexture.SetUniform3f("uSpotlight.Ks", glm::vec3(1.0f));
 	PhongShaderMaterialTexture.SetUniform1f("uSpotlight.Kc", 1.0f);
-	PhongShaderMaterialTexture.SetUniform1f("uSpotlight.Kl", 0.092f);
-	PhongShaderMaterialTexture.SetUniform1f("uSpotlight.Kq", 0.002f);
+	PhongShaderMaterialTexture.SetUniform1f("uSpotlight.Kl", 0.0092f);
+	PhongShaderMaterialTexture.SetUniform1f("uSpotlight.Kq", 0.0002f);
 	PhongShaderMaterialTexture.SetUniform1f("uSpotlight.InnerCutOff", glm::cos(glm::radians(25.5f)));
-	PhongShaderMaterialTexture.SetUniform1f("uSpotlight.OuterCutOff", glm::cos(glm::radians(30.5f)));
+	PhongShaderMaterialTexture.SetUniform1f("uSpotlight.OuterCutOff", glm::cos(glm::radians(27.5f)));
 
 	// Materials
 	PhongShaderMaterialTexture.SetUniform1i("uMaterial.Kd", 0);
 	PhongShaderMaterialTexture.SetUniform1i("uMaterial.Ks", 1);
-	PhongShaderMaterialTexture.SetUniform1f("uMaterial.Shininess", 1024.0f);
+	PhongShaderMaterialTexture.SetUniform1f("uMaterial.Shininess", 64);
 	glUseProgram(0);
 
 	glm::mat4 Projection = glm::perspective(45.0f, WindowWidth / (float)WindowHeight, 0.1f, 100.0f);
@@ -291,6 +290,8 @@ int main() {
 	float EndTime = glfwGetTime();
 	glClearColor(0.53, 0.81, 0.98, 1.0);
 
+	unsigned SeaDiffuseTexture = Texture::LoadImageToTexture("res/sea_d.jpg");
+	unsigned SeaSpecularTexture = Texture::LoadImageToTexture("res/sea_s.jpg");
 	unsigned SunDiffuseTexture = Texture::LoadImageToTexture("res/sun.jpg");
 	unsigned SandDiffuseTexture = Texture::LoadImageToTexture("res/sand.jpg");
 	unsigned RockDiffuseTexture = Texture::LoadImageToTexture("res/rock.jpg");
@@ -299,26 +300,29 @@ int main() {
 	unsigned CloudDiffuseTexture = Texture::LoadImageToTexture("res/cloud.jpg");
 	unsigned PalmTreeDiffuseTexture = Texture::LoadImageToTexture("res/palmTree.jpg");
 	unsigned PalmLeafDiffuseTexture = Texture::LoadImageToTexture("res/palmLeaf.jpg");
-	unsigned SeaDiffuseTexture = Texture::LoadImageToTexture("res/sea_d.jpg");
-	unsigned SeaSpecularTexture = Texture::LoadImageToTexture("res/sea_s.jpg");
+	unsigned CampfireDiffuseTexture = Texture::LoadImageToTexture("res/campfire.jpg");
 
 	Shader* CurrentShader = &PhongShaderMaterialTexture;
 
 	bool clouds_and_lighthouse_light_visibility = true;
 
-	float PI= atan(1) * 4;
-
+	double PI = atan(1) * 4;
+	float i = 1;
 	while (!glfwWindowShouldClose(Window)) {
 		glfwPollEvents();
 		HandleInput(&State);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		Projection = glm::perspective(45.0f, WindowWidth / (float)WindowHeight, 0.1f, 100.0f);
+
+	
+
+		Projection = glm::perspective(90.0f, WindowWidth / (float)WindowHeight, 0.1f, 100.0f);
 		View = glm::lookAt(FPSCamera.GetPosition(), FPSCamera.GetTarget(), FPSCamera.GetUp());
 		StartTime = glfwGetTime();
 		glUseProgram(CurrentShader->GetId());
 		CurrentShader->SetProjection(Projection);
 		CurrentShader->SetView(View);
 		CurrentShader->SetUniform3f("uViewPos", FPSCamera.GetPosition());
+	
 
 		if (glfwGetKey(Window, GLFW_KEY_P) == GLFW_PRESS)
 		{
@@ -330,7 +334,7 @@ int main() {
 		}
 
 		// Sun
-		glm::vec3 PointLightPosition(15, 10.0f, 0);
+		glm::vec3 PointLightPosition(15, 15.0f, 0);
 		CurrentShader->SetUniform3f("uPointLight.Position", PointLightPosition);
 		ModelMatrix = glm::mat4(1.0f);
 		ModelMatrix = glm::translate(ModelMatrix, PointLightPosition);
@@ -354,6 +358,16 @@ int main() {
 		glBindVertexArray(CubeVAO);
 		glDrawArrays(GL_TRIANGLES, 0, CubeVertices.size() / 8);
 
+		// Torch on small island (far)
+		ModelMatrix = glm::mat4(1.0f);
+		ModelMatrix = glm::translate(ModelMatrix, glm::vec3(25.0f, -0.7, 25.0f));
+		ModelMatrix = glm::scale(ModelMatrix, glm::vec3(1));
+		CurrentShader->SetModel(ModelMatrix);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, CampfireDiffuseTexture);
+		glBindVertexArray(CubeVAO);
+		glDrawArrays(GL_TRIANGLES, 0, CubeVertices.size() / 8);
+
 		// Small island (Near)
 		ModelMatrix = glm::mat4(1.0f);
 		ModelMatrix = glm::translate(ModelMatrix, glm::vec3(-20.0f, -2.7f, -15.0f));
@@ -361,6 +375,16 @@ int main() {
 		CurrentShader->SetModel(ModelMatrix);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, SandDiffuseTexture);
+		glBindVertexArray(CubeVAO);
+		glDrawArrays(GL_TRIANGLES, 0, CubeVertices.size() / 8);
+
+		// Torch on small island (near)
+		ModelMatrix = glm::mat4(1.0f);
+		ModelMatrix = glm::translate(ModelMatrix, glm::vec3(-20.0f, -0.7f, -15.0f));
+		ModelMatrix = glm::scale(ModelMatrix, glm::vec3(1));
+		CurrentShader->SetModel(ModelMatrix);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, CampfireDiffuseTexture);
 		glBindVertexArray(CubeVAO);
 		glDrawArrays(GL_TRIANGLES, 0, CubeVertices.size() / 8);
 
@@ -373,6 +397,17 @@ int main() {
 		glBindTexture(GL_TEXTURE_2D, SandDiffuseTexture);
 		glBindVertexArray(CubeVAO);
 		glDrawArrays(GL_TRIANGLES, 0, CubeVertices.size() / 8);
+
+		// Torch on big island (near)
+		ModelMatrix = glm::mat4(1.0f);
+		ModelMatrix = glm::translate(ModelMatrix, glm::vec3(3.0f, -1.4f, 3.0f));
+		ModelMatrix = glm::scale(ModelMatrix, glm::vec3(1));
+		CurrentShader->SetModel(ModelMatrix);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, CampfireDiffuseTexture);
+		glBindVertexArray(CubeVAO);
+		glDrawArrays(GL_TRIANGLES, 0, CubeVertices.size() / 8);
+
 
 		// Palm tree
 		ModelMatrix = glm::mat4(1.0f);
@@ -488,10 +523,9 @@ int main() {
 		if (clouds_and_lighthouse_light_visibility)
 		{
 
+			double lightHouseLightRotationSpeed = (PI / 180.0) * 30;
 			CurrentShader->SetUniform3f("uSpotlight.Position", glm::vec3(-2.0f, 2.7f, -15.0f));
-			float lightHouseLightRotationSpeed=(PI/180.0)*30;
 			CurrentShader->SetUniform3f("uSpotlight.Direction", glm::vec3(sin(time * lightHouseLightRotationSpeed), -0.3, cos(time * lightHouseLightRotationSpeed)));
-			
 
 			// Fixed size cloud
 			ModelMatrix = glm::mat4(1.0f);
@@ -515,6 +549,12 @@ int main() {
 			glBindTexture(GL_TEXTURE_2D, CloudDiffuseTexture);
 			glBindVertexArray(CubeVAO);
 			glDrawArrays(GL_TRIANGLES, 0, CubeVertices.size() / 8);
+		}
+		else
+		{
+
+			CurrentShader->SetUniform3f("uSpotlight.Position", glm::vec3(-10));
+			CurrentShader->SetUniform3f("uSpotlight.Direction", glm::vec3(-20));
 		}
 
 

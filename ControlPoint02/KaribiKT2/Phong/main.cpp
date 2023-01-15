@@ -178,9 +178,9 @@ int main()
 	glEnable(GL_CULL_FACE);
 
 
-	Model Model("res/IronMan/IronMan.obj");
-	if (!Model.Load()) {
-		std::cerr << "Failed to load fox\n";
+	Model Woman("res/Woman/091_W_Aya_100K.obj");
+	if (!Woman.Load()) {
+		std::cerr << "Failed to load model\n";
 		glfwTerminate();
 		return -1;
 	}
@@ -251,7 +251,7 @@ int main()
 	glUseProgram(PhongShaderMaterialTexture.GetId());
 
 	// Light from far far away  
-	float far_far_away_light = 0.7f;
+	float far_far_away_light = 1.0f;
 	PhongShaderMaterialTexture.SetUniform3f("uDirLight.Direction", glm::vec3(0.0f));
 	PhongShaderMaterialTexture.SetUniform3f("uDirLight.Ka", glm::vec3(far_far_away_light));
 	PhongShaderMaterialTexture.SetUniform3f("uDirLight.Kd", glm::vec3(far_far_away_light));
@@ -319,7 +319,7 @@ int main()
 	PhongShaderMaterialTexture.SetUniform1f("uMaterial.Shininess", 64);
 	glUseProgram(0);
 
-	glm::mat4 Projection = glm::perspective(45.0f, WindowWidth / (float)WindowHeight, 0.1f, 100.0f);
+	glm::mat4 Projection = glm::perspective(90.0f, WindowWidth / (float)WindowHeight, 0.1f, 100.0f);
 	glm::mat4 View = glm::lookAt(FPSCamera.GetPosition(), FPSCamera.GetTarget(), FPSCamera.GetUp());
 	glm::mat4 ModelMatrix(1.0f);
 
@@ -328,8 +328,6 @@ int main()
 	float EndTime = glfwGetTime();
 	glClearColor(0.53, 0.81, 0.98, 1.0);
 
-	unsigned SeaDiffuseTexture = Texture::LoadImageToTexture("res/sea_d.jpg");
-	unsigned SeaSpecularTexture = Texture::LoadImageToTexture("res/sea_s.jpg");
 	unsigned SunDiffuseTexture = Texture::LoadImageToTexture("res/sun.jpg");
 	unsigned SandDiffuseTexture = Texture::LoadImageToTexture("res/sand.jpg");
 	unsigned RockDiffuseTexture = Texture::LoadImageToTexture("res/rock.jpg");
@@ -339,18 +337,21 @@ int main()
 	unsigned PalmTreeDiffuseTexture = Texture::LoadImageToTexture("res/palmTree.jpg");
 	unsigned PalmLeafDiffuseTexture = Texture::LoadImageToTexture("res/palmLeaf.jpg");
 	unsigned CampfireDiffuseTexture = Texture::LoadImageToTexture("res/campfire.jpg");
+	unsigned SeaDiffuseTexture = Texture::LoadImageToTexture("res/sea_d.jpg");
+
+	unsigned SeaSpecularTexture = Texture::LoadImageToTexture("res/sea_s.jpg");
 	unsigned BlackSpecularTexture = Texture::LoadImageToTexture("res/black.jpg");
 
 	Shader* CurrentShader = &PhongShaderMaterialTexture;
 
 	bool clouds_and_lighthouse_light_visibility = true;
+	bool DirectionalLightDay = true;
 	double PI = atan(1) * 4;
 
 	while (!glfwWindowShouldClose(Window)) {
 		glfwPollEvents();
 		HandleInput(&State);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 		Projection = glm::perspective(90.0f, WindowWidth / (float)WindowHeight, 0.1f, 100.0f);
 		View = glm::lookAt(FPSCamera.GetPosition(), FPSCamera.GetTarget(), FPSCamera.GetUp());
 		StartTime = glfwGetTime();
@@ -368,20 +369,47 @@ int main()
 			clouds_and_lighthouse_light_visibility = true;
 		}
 
-		// Sun
-		glm::vec3 PointLightPositionSun(15, 15.0f, 0);
-		CurrentShader->SetUniform3f("uSunLight.Position", PointLightPositionSun);
-		ModelMatrix = glm::mat4(1.0f);
-		ModelMatrix = glm::translate(ModelMatrix, PointLightPositionSun);
-		ModelMatrix = glm::scale(ModelMatrix, glm::vec3(7));
-		CurrentShader->SetModel(ModelMatrix);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, SunDiffuseTexture);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, BlackSpecularTexture);
-		glBindVertexArray(CubeVAO);
-		glDrawArrays(GL_TRIANGLES, 0, CubeVertices.size() / 8);
+		if (glfwGetKey(Window, GLFW_KEY_K) == GLFW_PRESS)
+		{
+			DirectionalLightDay = false;
+		}
+		if (glfwGetKey(Window, GLFW_KEY_L) == GLFW_PRESS)
+		{
+			DirectionalLightDay = true;
+		}
 
+		if(DirectionalLightDay)
+		{
+			far_far_away_light = 1;
+			CurrentShader->SetUniform3f("uDirLight.Ka", glm::vec3(far_far_away_light));
+			CurrentShader->SetUniform3f("uDirLight.Kd", glm::vec3(far_far_away_light));
+			CurrentShader->SetUniform3f("uDirLight.Ks", glm::vec3(far_far_away_light));
+			glClearColor(0.53, 0.81, 0.98, 1.0);
+			// Sun
+			glm::vec3 PointLightPositionSun(15, 15.0f, 0);
+			CurrentShader->SetUniform3f("uSunLight.Position", PointLightPositionSun);
+			ModelMatrix = glm::mat4(1.0f);
+			ModelMatrix = glm::translate(ModelMatrix, PointLightPositionSun);
+			ModelMatrix = glm::scale(ModelMatrix, glm::vec3(7));
+			CurrentShader->SetModel(ModelMatrix);
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, SunDiffuseTexture);
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, BlackSpecularTexture);
+			glBindVertexArray(CubeVAO);
+			glDrawArrays(GL_TRIANGLES, 0, CubeVertices.size() / 8);
+
+		}
+
+		if (!DirectionalLightDay)
+		{
+			far_far_away_light = 0;
+			CurrentShader->SetUniform3f("uDirLight.Ka", glm::vec3(far_far_away_light));
+			CurrentShader->SetUniform3f("uDirLight.Kd", glm::vec3(far_far_away_light));
+			CurrentShader->SetUniform3f("uDirLight.Ks", glm::vec3(far_far_away_light));
+			glClearColor(0.0, 0.0, 0.0, 1.0);
+			CurrentShader->SetUniform3f("uSunLight.Position", glm::vec3(-999));
+		}
 		//Sea
 		DrawSea(CubeVAO, *CurrentShader, SeaDiffuseTexture, SeaSpecularTexture);
 
@@ -472,14 +500,13 @@ int main()
 		glBindVertexArray(CubeVAO);
 		glDrawArrays(GL_TRIANGLES, 0, CubeVertices.size() / 8);
 
-
-		// Model on island (IronMan)
+		// Model on island (Woman)
 		ModelMatrix = glm::mat4(1.0f);
-		ModelMatrix = glm::translate(ModelMatrix, glm::vec3(0.0f, -1.5f, -4.0f));
-		ModelMatrix = glm::scale(ModelMatrix, glm::vec3(0.02));
+		ModelMatrix = glm::translate(ModelMatrix, glm::vec3(0.0f, -2.25f, -4.5f));
+		ModelMatrix = glm::scale(ModelMatrix, glm::vec3(0.002));
+		ModelMatrix = glm::rotate(ModelMatrix, glm::radians(155.0f), glm::vec3(0, 1, 0));
 		CurrentShader->SetModel(ModelMatrix);
-		Model.Render();
-
+		Woman.Render();
 
 		// Palm tree
 		ModelMatrix = glm::mat4(1.0f);

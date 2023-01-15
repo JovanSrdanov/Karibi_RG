@@ -24,8 +24,6 @@ struct DirectionalLight {
 };
 
 struct Material {
-	// NOTE(Jovan): Diffuse is used as ambient as well since the light source
-	// defines the ambient colour
 	sampler2D Kd;
 	sampler2D Ks;
 	float Shininess;
@@ -52,6 +50,7 @@ out vec4 FragColor;
 void main() {
 	vec3 ViewDirection = normalize(uViewPos - vWorldSpaceFragment);
 
+	// Directional Light
 	vec3 DirLightVector = normalize(-uDirLight.Direction);
 	float DirDiffuse = max(dot(vWorldSpaceNormal, DirLightVector), 0.0f);
 	vec3 DirReflectDirection = reflect(-DirLightVector, vWorldSpaceNormal);
@@ -88,7 +87,6 @@ void main() {
 	PtLightDistance = length(uTorchLight1.Position - vWorldSpaceFragment);
 	PtAttenuation = 1.0f / (uTorchLight1.Kc + uTorchLight1.Kl * PtLightDistance + uTorchLight1.Kq * (PtLightDistance * PtLightDistance));
 	vec3 PtColorTorch1 = PtAttenuation * (PtAmbientColor + PtDiffuseColor + PtSpecularColor);
-
 	
 	// Torch 2
 	PtLightVector = normalize(uTorchLight2.Position - vWorldSpaceFragment);
@@ -117,7 +115,6 @@ void main() {
 	PtLightDistance = length(uTorchLight3.Position - vWorldSpaceFragment);
 	PtAttenuation = 1.0f / (uTorchLight3.Kc + uTorchLight3.Kl * PtLightDistance + uTorchLight3.Kq * (PtLightDistance * PtLightDistance));
 	vec3 PtColorTorch3 = PtAttenuation * (PtAmbientColor + PtDiffuseColor + PtSpecularColor);
-
 
 	// LighthouseLight1
 	vec3 SpotlightVector1 = normalize(uLighthouseLight1.Position - vWorldSpaceFragment);
@@ -157,8 +154,6 @@ void main() {
 	float SpotIntensity2 = clamp((Theta2 - uLighthouseLight2.OuterCutOff) / Epsilon2, 0.0f, 1.0f);
 	vec3 SpotColor2 = SpotIntensity2 * SpotAttenuation2 * (SpotAmbientColor2 + SpotDiffuseColor2 + SpotSpecularColor2);
 
-
-	
 	vec3 FinalColor = DirColor + PtColorSun + PtColorTorch1 + PtColorTorch2 + PtColorTorch3 + SpotColor1 + SpotColor2;
 	FragColor = vec4(FinalColor, 1.0f);
 }

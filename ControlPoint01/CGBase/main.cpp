@@ -8,8 +8,8 @@
 
 #include <iostream>
 #include "shader.hpp"
-#include "model.hpp" 
-#include "renderable.hpp" 
+#include "model.hpp"
+#include "renderable.hpp"
 
 const int WindowWidth = 1280;
 const int WindowHeight = 720;
@@ -17,12 +17,12 @@ const std::string WindowTitle = "Karibi";
 const float TargetFPS = 60.0f;
 const float TargetFrameTime = 1.0f / TargetFPS;
 
-void FramebufferSizeCallback(GLFWwindow* window, int width, int height)
+void FramebufferSizeCallback(GLFWwindow *window, int width, int height)
 {
 	glViewport(0, 0, width, height);
 }
 
-static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mode)
+static void KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mode)
 {
 	bool IsDown = action == GLFW_PRESS || action == GLFW_REPEAT;
 	switch (key)
@@ -33,14 +33,14 @@ static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, i
 	}
 }
 
-static void ErrorCallback(int error, const char* description)
+static void ErrorCallback(int error, const char *description)
 {
 	std::cerr << "GLFW Error: " << description << std::endl;
 }
 
 int main()
 {
-	GLFWwindow* Window = 0;
+	GLFWwindow *Window = 0;
 	if (!glfwInit())
 	{
 		std::cerr << "Failed to init glfw" << std::endl;
@@ -83,50 +83,67 @@ int main()
 	}
 
 	float cubeVertices[] =
-	{
-		-0.2, -0.2,  0.2,   0, 0, 0,
-		0.2, -0.2,  0.2,    0, 0, 0,
-		0.2,  0.2,  0.2,    0, 0, 0,
-		-0.2,  0.2,  0.2,   0, 0, 0,
+		{
+			-0.2, -0.2, 0.2, 0, 0, 0,
+			0.2, -0.2, 0.2, 0, 0, 0,
+			0.2, 0.2, 0.2, 0, 0, 0,
+			-0.2, 0.2, 0.2, 0, 0, 0,
 
-		-0.2, -0.2, -0.2,   0, 0, 0,
-		0.2, -0.2, -0.2,    0, 0, 0,
-		0.2,  0.2, -0.2,    0, 0, 0,
-		-0.2,  0.2, -0.2,   0, 0, 0
-	};
+			-0.2, -0.2, -0.2, 0, 0, 0,
+			0.2, -0.2, -0.2, 0, 0, 0,
+			0.2, 0.2, -0.2, 0, 0, 0,
+			-0.2, 0.2, -0.2, 0, 0, 0};
 
 	unsigned int cubeIndices[] =
-	{
-		0, 1, 2,
-		2, 3, 0,
+		{
+			0, 1, 2,
+			2, 3, 0,
 
-		1, 5, 6,
-		6, 2, 1,
+			1, 5, 6,
+			6, 2, 1,
 
-		7, 6, 5,
-		5, 4, 7,
+			7, 6, 5,
+			5, 4, 7,
 
-		4, 0, 3,
-		3, 7, 4,
+			4, 0, 3,
+			3, 7, 4,
 
-		4, 5, 1,
-		1, 0, 4,
+			4, 5, 1,
+			1, 0, 4,
 
-		3, 2, 6,
-		6, 7, 3
-	};
+			3, 2, 6,
+			6, 7, 3};
 	float triangleVertices[] =
-	{
-		-0.5f, -0.5f, 0.0f, 0.0, 0.0, 0.0,
-		 0.5f, -0.5f, 0.0f, 0.0, 0.0, 0.0,
-		 0.0f,  0.5f, 0.0f, 0.0, 0.0, 0.0,
-	};
+		{
+			-0.5f,
+			-0.5f,
+			0.0f,
+			0.0,
+			0.0,
+			0.0,
+			0.5f,
+			-0.5f,
+			0.0f,
+			0.0,
+			0.0,
+			0.0,
+			0.0f,
+			0.5f,
+			0.0f,
+			0.0,
+			0.0,
+			0.0,
+		};
 
 	unsigned int triangleIndices[] =
-	{
-		0, 1, 2,
-		1, 2, 3,
-	};
+		{
+			0,
+			1,
+			2,
+			1,
+			2,
+			3,
+		};
 
 	Renderable cube(cubeVertices, sizeof(cubeVertices), cubeIndices, sizeof(cubeIndices));
 	Renderable triangle(triangleVertices, sizeof(triangleVertices), triangleIndices, sizeof(triangleIndices));

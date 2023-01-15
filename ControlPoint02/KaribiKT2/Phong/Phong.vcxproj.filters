@@ -15,46 +15,8 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="shader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="model.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="camera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="mesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="texture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config" />
-    <None Include="shaders\basic.frag">
-      <Filter>Source Files</Filter>
-    </None>
     <None Include="shaders\basic.vert">
-      <Filter>Source Files</Filter>
-    </None>
-    <None Include="shaders\color.frag">
-      <Filter>Source Files</Filter>
-    </None>
-    <None Include="shaders\color.vert">
-      <Filter>Source Files</Filter>
-    </None>
-    <None Include="shaders\gouraud.vert">
-      <Filter>Source Files</Filter>
-    </None>
-    <None Include="shaders\phong.frag">
-      <Filter>Source Files</Filter>
-    </None>
-    <None Include="shaders\phong_material.frag">
       <Filter>Source Files</Filter>
     </None>
     <None Include="shaders\phong_material_texture.frag">
@@ -80,5 +42,25 @@
     <ClInclude Include="texture.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="model.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="shader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

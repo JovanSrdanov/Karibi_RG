@@ -345,7 +345,7 @@ int main()
 	Shader* CurrentShader = &PhongShaderMaterialTexture;
 
 	bool clouds_and_lighthouse_light_visibility = true;
-	bool DirectionalLightDay = true;
+	bool IsDay = true;
 	double PI = atan(1) * 4;
 
 	while (!glfwWindowShouldClose(Window)) {
@@ -371,14 +371,14 @@ int main()
 
 		if (glfwGetKey(Window, GLFW_KEY_K) == GLFW_PRESS)
 		{
-			DirectionalLightDay = false;
+			IsDay = false;
 		}
 		if (glfwGetKey(Window, GLFW_KEY_L) == GLFW_PRESS)
 		{
-			DirectionalLightDay = true;
+			IsDay = true;
 		}
 
-		if(DirectionalLightDay)
+		if(IsDay)
 		{
 			far_far_away_light = 1;
 			CurrentShader->SetUniform3f("uDirLight.Ka", glm::vec3(far_far_away_light));
@@ -398,10 +398,9 @@ int main()
 			glBindTexture(GL_TEXTURE_2D, BlackSpecularTexture);
 			glBindVertexArray(CubeVAO);
 			glDrawArrays(GL_TRIANGLES, 0, CubeVertices.size() / 8);
-
 		}
 
-		if (!DirectionalLightDay)
+		if (!IsDay)
 		{
 			far_far_away_light = 0;
 			CurrentShader->SetUniform3f("uDirLight.Ka", glm::vec3(far_far_away_light));
@@ -410,6 +409,7 @@ int main()
 			glClearColor(0.0, 0.0, 0.0, 1.0);
 			CurrentShader->SetUniform3f("uSunLight.Position", glm::vec3(-999));
 		}
+
 		//Sea
 		DrawSea(CubeVAO, *CurrentShader, SeaDiffuseTexture, SeaSpecularTexture);
 

@@ -33,6 +33,7 @@ uniform PositionalLight uSunLight;
 uniform PositionalLight uTorchLight1;
 uniform PositionalLight uTorchLight2;
 uniform PositionalLight uTorchLight3;
+uniform PositionalLight uLightHousePointLight;
 
 uniform DirectionalLight uLighthouseLight1;
 uniform DirectionalLight uLighthouseLight2;
@@ -116,6 +117,20 @@ void main() {
 	PtAttenuation = 1.0f / (uTorchLight3.Kc + uTorchLight3.Kl * PtLightDistance + uTorchLight3.Kq * (PtLightDistance * PtLightDistance));
 	vec3 PtColorTorch3 = PtAttenuation * (PtAmbientColor + PtDiffuseColor + PtSpecularColor);
 
+	// Torch 3
+	PtLightVector = normalize(uLightHousePointLight.Position - vWorldSpaceFragment);
+	PtDiffuse = max(dot(vWorldSpaceNormal, PtLightVector), 0.0f);
+	PtReflectDirection = reflect(-PtLightVector, vWorldSpaceNormal);
+	PtSpecular = pow(max(dot(ViewDirection, PtReflectDirection), 0.0f), uMaterial.Shininess);
+
+	PtAmbientColor = uLightHousePointLight.Ka * vec3(texture(uMaterial.Kd, UV));
+	PtDiffuseColor = PtDiffuse * uLightHousePointLight.Kd * vec3(texture(uMaterial.Kd, UV));
+	PtSpecularColor = PtSpecular * uLightHousePointLight.Ks * vec3(texture(uMaterial.Ks, UV));
+
+	PtLightDistance = length(uLightHousePointLight.Position - vWorldSpaceFragment);
+	PtAttenuation = 1.0f / (uLightHousePointLight.Kc + uLightHousePointLight.Kl * PtLightDistance + uLightHousePointLight.Kq * (PtLightDistance * PtLightDistance));
+	vec3 PtColorLightHouse = PtAttenuation * (PtAmbientColor + PtDiffuseColor + PtSpecularColor);
+
 	// LighthouseLight1
 	vec3 SpotlightVector1 = normalize(uLighthouseLight1.Position - vWorldSpaceFragment);
 
@@ -154,6 +169,6 @@ void main() {
 	float SpotIntensity2 = clamp((Theta2 - uLighthouseLight2.OuterCutOff) / Epsilon2, 0.0f, 1.0f);
 	vec3 SpotColor2 = SpotIntensity2 * SpotAttenuation2 * (SpotAmbientColor2 + SpotDiffuseColor2 + SpotSpecularColor2);
 
-	vec3 FinalColor = DirColor + PtColorSun + PtColorTorch1 + PtColorTorch2 + PtColorTorch3 + SpotColor1 + SpotColor2;
+	vec3 FinalColor = DirColor + PtColorSun + PtColorTorch1 + PtColorTorch2 + PtColorTorch3 +PtColorLightHouse + SpotColor1 + SpotColor2;
 	FragColor = vec4(FinalColor, 1.0f);
 }

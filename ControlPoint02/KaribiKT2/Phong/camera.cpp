@@ -1,14 +1,14 @@
 #include "camera.hpp"
 
 Camera::Camera() {
-    mPosition = glm::vec3(0.0f, 0.0f, 25.0f);
+    mPosition = glm::vec3(10.0f, 0.0f, -15.0f);
     mWorldUp = glm::vec3(0.0f, 1.0f, 0.0f);
     mRight = glm::vec3(1.0f, 0.0f, 0.0f);
     mVelocity = glm::vec3(0.0f);
     mPitch = 0.0f;
-    mYaw = -90.0f;
+    mYaw = 145.0f;
     mMoveSpeed = 30.0f;
-    mLookSpeed = 140.0f;
+    mLookSpeed = 100.0f;
     mPlayerHeight = 3.0f;
     updateVectors();
 }
@@ -21,7 +21,7 @@ Camera::Move(float dx, float dy, float dt) {
 
 void
 Camera::UpDown(int direction) {
-    mPlayerHeight = mPlayerHeight + direction;
+    mPlayerHeight = mPlayerHeight + direction * 0.5;
     updateVectors();
 }
 

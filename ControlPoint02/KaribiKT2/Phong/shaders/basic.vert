@@ -15,7 +15,6 @@ out vec3 vWorldSpaceNormal;
 void main() {
 	vWorldSpaceFragment = vec3(uModel * vec4(aPos, 1.0f));
 	vWorldSpaceNormal = normalize(mat3(transpose(inverse(uModel))) * aNormal);
-
 	UV = aUV;
 	gl_Position = uProjection * uView * uModel * vec4(aPos, 1.0f);
 }

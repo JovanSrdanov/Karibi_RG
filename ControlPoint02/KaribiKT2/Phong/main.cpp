@@ -510,8 +510,8 @@ int main()
 		// Torch on big island
 		glm::vec3 PointLightPositionSunTorch3(3.0f, -1.4f, 3.0f);
 		CurrentShader->SetUniform3f("uTorchLight3.Position", PointLightPositionSunTorch3);
-		CurrentShader->SetUniform1f("uTorchLight3.Kc", 0.1 / abs(sin(glfwGetTime() * 2)));
-		CurrentShader->SetUniform1f("uTorchLight3.Kl", 0.1 / abs(sin(glfwGetTime() * 3)));
+		CurrentShader->SetUniform1f("uTorchLight3.Kc", 2 / abs(sin(glfwGetTime() * 2)));
+		CurrentShader->SetUniform1f("uTorchLight3.Kl", 2.1 / abs(sin(glfwGetTime() * 3)));
 		CurrentShader->SetUniform1f("uTorchLight3.Kq", 0.1 / abs(sin(glfwGetTime() * 5)));
 		ModelMatrix = glm::mat4(1.0f);
 		ModelMatrix = glm::translate(ModelMatrix, PointLightPositionSunTorch3);

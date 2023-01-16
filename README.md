@@ -5,5 +5,14 @@ Računarstvo i automatika
 Primenjene računarske nauke i informatika  
 
 RA 145/2019 - Jovan Srdanov
-Tehnologije: C++ i OpenGL
+Made in: C++ i OpenGL
+
+Key bindings in ControlPoint02:  
+
+Move: WASD    
+Look: Arrow keys    
+Toggle lighthouse and clouds: P and O  
+Toggle night and day: K and L  
+
+
 

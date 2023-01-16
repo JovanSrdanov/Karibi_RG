@@ -64,9 +64,9 @@ static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, i
 	case GLFW_KEY_SPACE: UserInput->GoUp = IsDown; break;
 	case GLFW_KEY_C: UserInput->GoDown = IsDown; break;
 
-	case GLFW_KEY_L: 
+	case GLFW_KEY_L:
 	{
-		if (IsDown) 
+		if (IsDown)
 		{
 			State->mDrawDebugLines ^= true; break;
 		}
@@ -112,9 +112,9 @@ static void DrawSea(unsigned vao, const Shader& shader, unsigned diffuse, unsign
 	float Size = 4.0f;
 	int seaSize = 10;
 	float time = glfwGetTime();
-	for (int i = -seaSize; i < seaSize; ++i) 
+	for (int i = -seaSize; i < seaSize; ++i)
 	{
-		for (int j = -seaSize; j < seaSize; ++j) 
+		for (int j = -seaSize; j < seaSize; ++j)
 		{
 			glm::mat4 Model(1.0f);
 			Model = glm::translate(Model, glm::vec3(i * Size, (abs(sin(time * 2))) - Size * 1.2, j * Size));
@@ -128,7 +128,7 @@ static void DrawSea(unsigned vao, const Shader& shader, unsigned diffuse, unsign
 int main()
 {
 	GLFWwindow* Window = 0;
-	if (!glfwInit()) 
+	if (!glfwInit())
 	{
 		std::cerr << "Failed to init glfw" << std::endl;
 		return -1;
@@ -139,7 +139,7 @@ int main()
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	Window = glfwCreateWindow(WindowWidth, WindowHeight, WindowTitle.c_str(), 0, 0);
-	if (!Window) 
+	if (!Window)
 	{
 		std::cerr << "Failed to create window" << std::endl;
 		glfwTerminate();
@@ -151,7 +151,7 @@ int main()
 	glfwSetWindowPos(Window, (mode->width - WindowWidth) / 2, (mode->height - WindowHeight) / 2);
 
 	GLenum GlewError = glewInit();
-	if (GlewError != GLEW_OK) 
+	if (GlewError != GLEW_OK)
 	{
 		std::cerr << "Failed to init glew: " << glewGetErrorString(GlewError) << std::endl;
 		glfwTerminate();
@@ -186,7 +186,7 @@ int main()
 		return -1;
 	}
 
-	std::vector<float> CubeVertices = 
+	std::vector<float> CubeVertices =
 	{
 		// X     Y     Z     NX    NY    NZ    U     V    FRONT SIDE
 		-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, // L D
@@ -389,17 +389,17 @@ int main()
 			IsDay = true;
 		}
 
-		if(IsDay)
+		if (IsDay)
 		{
 			glClearColor(0.53, 0.81, 0.98, 1.0);
-			
+
 			far_far_away_light = 1;
 			CurrentShader->SetUniform3f("uDirLight.Ka", glm::vec3(far_far_away_light));
 			CurrentShader->SetUniform3f("uDirLight.Kd", glm::vec3(far_far_away_light));
 			CurrentShader->SetUniform3f("uDirLight.Ks", glm::vec3(far_far_away_light));
 
 			// Sun
-			glm::vec3 PointLightPositionSun(15, 15.0f, 0);
+			glm::vec3 PointLightPositionSun(-25, 15.0f, 15);
 			CurrentShader->SetUniform3f("uSunLight.Position", PointLightPositionSun);
 			ModelMatrix = glm::mat4(1.0f);
 			ModelMatrix = glm::translate(ModelMatrix, PointLightPositionSun);
@@ -423,14 +423,20 @@ int main()
 			CurrentShader->SetUniform3f("uDirLight.Ks", glm::vec3(far_far_away_light));
 			CurrentShader->SetUniform3f("uSunLight.Position", glm::vec3(-999));
 
-			// Model in sea at night (Shark)
-			ModelMatrix = glm::mat4(1.0f);
-			ModelMatrix = glm::translate(ModelMatrix, glm::vec3(4.0f, -3.0f, -9.5f));
-			ModelMatrix = glm::scale(ModelMatrix, glm::vec3(1.5));
-			ModelMatrix = glm::rotate(ModelMatrix, glm::radians(-45.0f), glm::vec3(0, 0, 1));
-			ModelMatrix = glm::rotate(ModelMatrix, glm::radians(45.0f), glm::vec3(0, 1, 0));
-			CurrentShader->SetModel(ModelMatrix);
-			Shark.Render();
+			// Sharks
+			int numberOfSharks = 4;
+			for (int i = 0; i < numberOfSharks; i++)
+			{
+				float AngleOfShark = (2 * PI / numberOfSharks) * i;
+				float DistanceFromIsland = 10;
+				ModelMatrix = glm::mat4(1.0f);
+				ModelMatrix = glm::translate(ModelMatrix, glm::vec3(DistanceFromIsland * sin(AngleOfShark + glfwGetTime()), -3.0f, DistanceFromIsland * cos(AngleOfShark + glfwGetTime())));
+				ModelMatrix = glm::scale(ModelMatrix, glm::vec3(1.5));
+				ModelMatrix = glm::rotate(ModelMatrix, glm::radians((float)glfwGetTime() * 100), glm::vec3(0, 1, 0));
+				ModelMatrix = glm::rotate(ModelMatrix, glm::radians(-45.0f), glm::vec3(0, 0, 1));
+				CurrentShader->SetModel(ModelMatrix);
+				Shark.Render();
+			}
 
 		}
 
@@ -452,9 +458,9 @@ int main()
 		// Torch on small island (Far)
 		glm::vec3 PointLightPositionTorch1(25.0f, -0.7, 25.0f);
 		CurrentShader->SetUniform3f("uTorchLight1.Position", PointLightPositionTorch1);
-		CurrentShader->SetUniform1f("uTorchLight1.Kc", 1.0 / abs(sin(glfwGetTime()*2)));
-		CurrentShader->SetUniform1f("uTorchLight1.Kl", 1.0 / abs(sin(glfwGetTime()*3)));
-		CurrentShader->SetUniform1f("uTorchLight1.Kq", 1.0 / abs(sin(glfwGetTime()*5)));
+		CurrentShader->SetUniform1f("uTorchLight1.Kc", 0.1 / abs(sin(glfwGetTime() * 2)));
+		CurrentShader->SetUniform1f("uTorchLight1.Kl", 0.1 / abs(sin(glfwGetTime() * 3)));
+		CurrentShader->SetUniform1f("uTorchLight1.Kq", 1.0 / abs(sin(glfwGetTime() * 5)));
 		ModelMatrix = glm::mat4(1.0f);
 		ModelMatrix = glm::translate(ModelMatrix, PointLightPositionTorch1);
 		ModelMatrix = glm::scale(ModelMatrix, glm::vec3(1));
@@ -482,7 +488,7 @@ int main()
 		glm::vec3 PointLightPositionSunTorch2(-20.0f, -0.7f, -15.0f);
 		CurrentShader->SetUniform3f("uTorchLight2.Position", PointLightPositionSunTorch2);
 		CurrentShader->SetUniform1f("uTorchLight2.Kc", 0.1 / abs(sin(glfwGetTime() * 2)));
-		CurrentShader->SetUniform1f("uTorchLight2.Kl", 0.91 / abs(sin(glfwGetTime() * 3)));
+		CurrentShader->SetUniform1f("uTorchLight2.Kl", 0.091 / abs(sin(glfwGetTime() * 3)));
 		CurrentShader->SetUniform1f("uTorchLight2.Kq", 0.1 / abs(sin(glfwGetTime() * 5)));
 		ModelMatrix = glm::mat4(1.0f);
 		ModelMatrix = glm::translate(ModelMatrix, PointLightPositionSunTorch2);
@@ -508,10 +514,10 @@ int main()
 		glDrawArrays(GL_TRIANGLES, 0, CubeVertices.size() / 8);
 
 		// Torch on big island
-		glm::vec3 PointLightPositionSunTorch3(3.0f, -1.4f, 3.0f);
+		glm::vec3 PointLightPositionSunTorch3(3.5f, -1.4f, 3.5f);
 		CurrentShader->SetUniform3f("uTorchLight3.Position", PointLightPositionSunTorch3);
-		CurrentShader->SetUniform1f("uTorchLight3.Kc", 2 / abs(sin(glfwGetTime() * 2)));
-		CurrentShader->SetUniform1f("uTorchLight3.Kl", 2.1 / abs(sin(glfwGetTime() * 3)));
+		CurrentShader->SetUniform1f("uTorchLight3.Kc", 1 / abs(sin(glfwGetTime() * 2)));
+		CurrentShader->SetUniform1f("uTorchLight3.Kl", 0.1 / abs(sin(glfwGetTime() * 3)));
 		CurrentShader->SetUniform1f("uTorchLight3.Kq", 0.1 / abs(sin(glfwGetTime() * 5)));
 		ModelMatrix = glm::mat4(1.0f);
 		ModelMatrix = glm::translate(ModelMatrix, PointLightPositionSunTorch3);
@@ -526,7 +532,7 @@ int main()
 
 		// Model on island (Woman)
 		ModelMatrix = glm::mat4(1.0f);
-		ModelMatrix = glm::translate(ModelMatrix, glm::vec3(0.0f, -2.25f, -4.5f));
+		ModelMatrix = glm::translate(ModelMatrix, glm::vec3(-4.5f, -2.25f, -4.5f));
 		ModelMatrix = glm::scale(ModelMatrix, glm::vec3(0.002));
 		ModelMatrix = glm::rotate(ModelMatrix, glm::radians(155.0f), glm::vec3(0, 1, 0));
 		CurrentShader->SetModel(ModelMatrix);
@@ -653,7 +659,8 @@ int main()
 		ModelMatrix = glm::translate(ModelMatrix, LighthousePosition);
 		ModelMatrix = glm::scale(ModelMatrix, glm::vec3(1.42));
 		float time = glfwGetTime();
-		ModelMatrix = glm::rotate(ModelMatrix, glm::radians(time * 30), glm::vec3(0, 1, 0));
+		float speedOfRotation = 170;
+		ModelMatrix = glm::rotate(ModelMatrix, glm::radians(time * speedOfRotation), glm::vec3(0, 1, 0));
 		CurrentShader->SetModel(ModelMatrix);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, LighthouseLampDiffuseTexture);
@@ -703,7 +710,7 @@ int main()
 		else
 		{
 			// Removing lighthouse lights
-			double lightHouseLightRotationSpeed = (PI / 180.0) * 30;
+			double lightHouseLightRotationSpeed = (PI / 180.0) * speedOfRotation;
 			CurrentShader->SetUniform3f("uLightHousePointLight.Position", LighthousePosition);
 
 			CurrentShader->SetUniform3f("uLighthouseLight1.Position", LighthousePosition);
@@ -719,7 +726,7 @@ int main()
 
 		EndTime = glfwGetTime();
 		float WorkTime = EndTime - StartTime;
-		if (WorkTime < TargetFrameTime) 
+		if (WorkTime < TargetFrameTime)
 		{
 			int DeltaMS = (int)((TargetFrameTime - WorkTime) * 1000.0f);
 			std::this_thread::sleep_for(std::chrono::milliseconds(DeltaMS));

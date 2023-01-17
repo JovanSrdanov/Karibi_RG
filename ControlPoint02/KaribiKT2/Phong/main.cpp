@@ -322,6 +322,18 @@ int main()
 	PhongShaderMaterialTexture.SetUniform1f("uLighthouseLight2.InnerCutOff", glm::cos(glm::radians(10.0f)));
 	PhongShaderMaterialTexture.SetUniform1f("uLighthouseLight2.OuterCutOff", glm::cos(glm::radians(35.0f)));
 
+	// Light from the FlashLight 
+	PhongShaderMaterialTexture.SetUniform3f("uFlashLight.Position", glm::vec3(999));
+	PhongShaderMaterialTexture.SetUniform3f("uFlashLight.Direction", glm::vec3(999));
+	PhongShaderMaterialTexture.SetUniform3f("uFlashLight.Ka", glm::vec3(0));
+	PhongShaderMaterialTexture.SetUniform3f("uFlashLight.Kd", glm::vec3(1));
+	PhongShaderMaterialTexture.SetUniform3f("uFlashLight.Ks", glm::vec3(1));
+	PhongShaderMaterialTexture.SetUniform1f("uFlashLight.Kc", 0.7f);
+	PhongShaderMaterialTexture.SetUniform1f("uFlashLight.Kl", 0.0002f);
+	PhongShaderMaterialTexture.SetUniform1f("uFlashLight.Kq", 0.0002f);
+	PhongShaderMaterialTexture.SetUniform1f("uFlashLight.InnerCutOff", glm::cos(glm::radians(15.0f)));
+	PhongShaderMaterialTexture.SetUniform1f("uFlashLight.OuterCutOff", glm::cos(glm::radians(30.0f)));
+
 	// Materials
 	PhongShaderMaterialTexture.SetUniform1i("uMaterial.Kd", 0);
 	PhongShaderMaterialTexture.SetUniform1i("uMaterial.Ks", 1);
@@ -356,6 +368,7 @@ int main()
 	Shader* CurrentShader = &PhongShaderMaterialTexture;
 	bool clouds_and_lighthouse_light_visibility = true;
 	bool IsDay = true;
+	bool FlashLight = false;
 	double PI = atan(1) * 4;
 	glClearColor(0.53, 0.81, 0.98, 1.0);
 
@@ -387,6 +400,27 @@ int main()
 		if (glfwGetKey(Window, GLFW_KEY_L) == GLFW_PRESS)
 		{
 			IsDay = true;
+		}
+
+		if (glfwGetKey(Window, GLFW_KEY_F) == GLFW_PRESS)
+		{
+			FlashLight = true;
+		}
+		if (glfwGetKey(Window, GLFW_KEY_G) == GLFW_PRESS)
+		{
+			FlashLight = false;
+		}
+
+		if (FlashLight)
+		{
+			CurrentShader->SetUniform3f("uFlashLight.Position", glm::vec3(FPSCamera.GetPosition()));
+			glm::vec3 pos = FPSCamera.GetTarget()-FPSCamera.GetPosition();
+			CurrentShader->SetUniform3f("uFlashLight.Direction", glm::vec3(pos.x, pos.y, pos.z));
+		}
+		if (!FlashLight)
+		{
+			CurrentShader->SetUniform3f("uFlashLight.Position", glm::vec3(-999));
+			CurrentShader->SetUniform3f("uFlashLight.Direction", glm::vec3(-998));
 		}
 
 		if (IsDay)

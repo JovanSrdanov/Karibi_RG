@@ -37,6 +37,7 @@ uniform PositionalLight uLightHousePointLight;
 
 uniform DirectionalLight uLighthouseLight1;
 uniform DirectionalLight uLighthouseLight2;
+uniform DirectionalLight uFlashLight;
 
 uniform DirectionalLight uDirLight;
 uniform Material uMaterial;
@@ -169,6 +170,27 @@ void main() {
 	float SpotIntensity2 = clamp((Theta2 - uLighthouseLight2.OuterCutOff) / Epsilon2, 0.0f, 1.0f);
 	vec3 SpotColor2 = SpotIntensity2 * SpotAttenuation2 * (SpotAmbientColor2 + SpotDiffuseColor2 + SpotSpecularColor2);
 
-	vec3 FinalColor = DirColor + PtColorSun + PtColorTorch1 + PtColorTorch2 + PtColorTorch3 +PtColorLightHouse + SpotColor1 + SpotColor2;
+		// LighthouseLight3
+	vec3 SpotlightVector3 = normalize(uFlashLight.Position - vWorldSpaceFragment);
+
+	float SpotDiffuse3 = max(dot(vWorldSpaceNormal, SpotlightVector3), 0.0f);
+	vec3 SpotReflectDirection3 = reflect(-SpotlightVector3, vWorldSpaceNormal);
+	float SpotSpecular3 = pow(max(dot(ViewDirection, SpotReflectDirection3), 0.0f), uMaterial.Shininess);
+
+	vec3 SpotAmbientColor3 = uFlashLight.Ka * vec3(texture(uMaterial.Kd, UV));
+	vec3 SpotDiffuseColor3 = SpotDiffuse3 * uFlashLight.Kd * vec3(texture(uMaterial.Kd, UV));
+	vec3 SpotSpecularColor3 = SpotSpecular3 * uFlashLight.Ks * vec3(texture(uMaterial.Ks, UV));
+
+	float SpotlightDistance3 = length(uFlashLight.Position - vWorldSpaceFragment);
+	float SpotAttenuation3 = 1.0f / (uFlashLight.Kc + uFlashLight.Kl * SpotlightDistance3 + uFlashLight.Kq * (SpotlightDistance3 * SpotlightDistance3));
+
+	float Theta3 = dot(SpotlightVector3, normalize(-uFlashLight.Direction));
+	float Epsilon3 = uFlashLight.InnerCutOff - uFlashLight.OuterCutOff;
+	float SpotIntensity3 = clamp((Theta3 - uFlashLight.OuterCutOff) / Epsilon3, 0.0f, 1.0f);
+	vec3 SpotColor3 = SpotIntensity3 * SpotAttenuation3 * (SpotAmbientColor3 + SpotDiffuseColor3 + SpotSpecularColor3);
+
+
+
+	vec3 FinalColor = DirColor + PtColorSun + PtColorTorch1 + PtColorTorch2 + PtColorTorch3 +PtColorLightHouse + SpotColor1 + SpotColor2+SpotColor3;
 	FragColor = vec4(FinalColor, 1.0f);
 }

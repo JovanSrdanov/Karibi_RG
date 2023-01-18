@@ -111,7 +111,7 @@ static void DrawSea(unsigned vao, const Shader& shader, unsigned diffuse, unsign
 
 			// Waves
 			model_matrix = glm::translate(model_matrix, glm::vec3(i * size, (abs(sin(time))) - size * 1.6, j * size));
-			model_matrix = glm::rotate(model_matrix, glm::radians(static_cast<float>(time * (45 + i))), glm::vec3(0, 0, 1));
+			model_matrix = glm::rotate(model_matrix, glm::radians(static_cast<float>(time * (45 + i))), glm::vec3(0.11, 0, 2));
 			model_matrix = glm::scale(model_matrix, glm::vec3(size, size, size));
 			shader.SetModel(model_matrix);
 			glDrawArrays(GL_TRIANGLES, 0, 36);
@@ -430,12 +430,12 @@ int main()
 			CurrentShader->SetUniform3f("uDirLight.Ks", glm::vec3(1.0f));
 
 			// Sun
-			CurrentShader->SetUniform3f("uDirLight.Direction", glm::vec3(0, -0.1, -0));
+			CurrentShader->SetUniform3f("uDirLight.Direction", glm::vec3(0, -0.1, 0));
 
 			glm::vec3 point_light_position_sun(0, 25, 0);
 			PhongShaderMaterialTexture.SetUniform1f("uSunLight.Kc", 0.1 / abs(sin(start_time)));
-		
-			PhongShaderMaterialTexture.SetUniform1f("uSunLight.Kq", 0.1 / abs(sin(start_time )));
+
+			PhongShaderMaterialTexture.SetUniform1f("uSunLight.Kq", 0.1 / abs(sin(start_time)));
 			CurrentShader->SetUniform3f("uSunLight.Position", point_light_position_sun);
 			model_matrix = glm::mat4(1.0f);
 			model_matrix = glm::translate(model_matrix, point_light_position_sun);
@@ -455,7 +455,7 @@ int main()
 			CurrentShader->SetUniform3f("uDirLight.Ka", glm::vec3(far_far_away_light));
 			CurrentShader->SetUniform3f("uDirLight.Kd", glm::vec3(far_far_away_light));
 			CurrentShader->SetUniform3f("uDirLight.Ks", glm::vec3(far_far_away_light));
-			CurrentShader->SetUniform3f("uSunLight.Position", glm::vec3(-999));
+			CurrentShader->SetUniform3f("uSunLight.Position", glm::vec3(999));
 
 			// Sharks
 			int number_of_sharks = 4;
@@ -464,7 +464,7 @@ int main()
 				float angle_of_shark = (2 * pi / number_of_sharks) * i;
 				float distance_from_island = 10;
 				model_matrix = glm::mat4(1.0f);
-				model_matrix = glm::translate(model_matrix, glm::vec3(distance_from_island * sin(angle_of_shark + start_time), -3.0f, distance_from_island * cos(angle_of_shark + start_time)));
+				model_matrix = glm::translate(model_matrix, glm::vec3(distance_from_island * sin(angle_of_shark + start_time), -4.25f, distance_from_island * cos(angle_of_shark + start_time)));
 				model_matrix = glm::scale(model_matrix, glm::vec3(1.5));
 				model_matrix = glm::rotate(model_matrix, glm::radians(static_cast<float>(start_time) * 100), glm::vec3(0, 1, 0));
 				model_matrix = glm::rotate(model_matrix, glm::radians(-45.0f), glm::vec3(0, 0, 1));
@@ -619,8 +619,8 @@ int main()
 
 		// Island for lighthouse 
 		model_matrix = glm::mat4(1.0f);
-		model_matrix = glm::translate(model_matrix, glm::vec3(-2.0f, -2.5f, -15.0f));
-		model_matrix = glm::scale(model_matrix, glm::vec3(3));
+		model_matrix = glm::translate(model_matrix, glm::vec3(-2.0f, -2.55f, -15.0f));
+		model_matrix = glm::scale(model_matrix, glm::vec3(3.25));
 		CurrentShader->SetModel(model_matrix);
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, RockDiffuseTexture);
@@ -671,6 +671,8 @@ int main()
 		glBindTexture(GL_TEXTURE_2D, LighthouseLampSpecularTexture);
 		glBindVertexArray(CubeVAO);
 		glDrawArrays(GL_TRIANGLES, 0, CubeVertices.size() / 8);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, 0);
 
 		if (clouds_and_lighthouse_light_visibility)
 		{

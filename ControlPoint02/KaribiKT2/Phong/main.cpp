@@ -258,8 +258,6 @@ int main()
 	glUseProgram(PhongShaderMaterialTexture.GetId());
 
 	// Light from far away
-	PhongShaderMaterialTexture.SetUniform3f("uDirLight.Position", glm::vec3(-25, 15.0, 15));
-	PhongShaderMaterialTexture.SetUniform3f("uDirLight.Direction", glm::vec3(-25, 15.0, 15));
 	PhongShaderMaterialTexture.SetUniform3f("uDirLight.Ka", glm::vec3(1.00, 0.97, 0.00));
 	PhongShaderMaterialTexture.SetUniform3f("uDirLight.Kd", glm::vec3(1.00, 0.97, 0.00));
 	PhongShaderMaterialTexture.SetUniform3f("uDirLight.Ks", glm::vec3(1.0f));

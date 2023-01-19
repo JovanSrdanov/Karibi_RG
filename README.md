@@ -14,6 +14,7 @@ Look: Arrow keys
 Toggle lighthouse and clouds: P and O  
 Toggle night and day: K and L  
 Toggle flashlight: F and G   
+Exit application: ESC  
 
 
 

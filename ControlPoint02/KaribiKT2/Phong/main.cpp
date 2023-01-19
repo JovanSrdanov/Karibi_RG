@@ -146,7 +146,7 @@ int main()
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_MAXIMIZED, GL_TRUE);
 
-	Window = glfwCreateWindow(WindowWidth, WindowHeight, WindowTitle.c_str(), 0, 0);
+	Window = glfwCreateWindow(WindowWidth, WindowHeight, WindowTitle.c_str(), glfwGetPrimaryMonitor(), 0);
 	if (!Window)
 	{
 		std::cerr << "Failed to create window" << std::endl;
@@ -257,43 +257,25 @@ int main()
 	Shader PhongShaderMaterialTexture("shaders/basic.vert", "shaders/phong_material_texture.frag");
 	glUseProgram(PhongShaderMaterialTexture.GetId());
 
-	// Light from far away
-	PhongShaderMaterialTexture.SetUniform3f("uDirLight.Ka", glm::vec3(1.00, 0.97, 0.00));
-	PhongShaderMaterialTexture.SetUniform3f("uDirLight.Kd", glm::vec3(1.00, 0.97, 0.00));
-	PhongShaderMaterialTexture.SetUniform3f("uDirLight.Ks", glm::vec3(1.0f));
-
 	// Default for point light (Sun)
-	PhongShaderMaterialTexture.SetUniform3f("uSunLight.Position", glm::vec3(-999));
 	PhongShaderMaterialTexture.SetUniform3f("uSunLight.Ka", glm::vec3(1.00, 0.97, 0.00));
 	PhongShaderMaterialTexture.SetUniform3f("uSunLight.Kd", glm::vec3(1.00, 0.97, 0.00));
 	PhongShaderMaterialTexture.SetUniform3f("uSunLight.Ks", glm::vec3(0));
-	PhongShaderMaterialTexture.SetUniform1f("uSunLight.Kc", 1.0f);
-	PhongShaderMaterialTexture.SetUniform1f("uSunLight.Kl", 0.01f);
-	PhongShaderMaterialTexture.SetUniform1f("uSunLight.Kq", 0.005f);
 
 	// Default for point light (Torch 1)
 	PhongShaderMaterialTexture.SetUniform3f("uTorchLight1.Ka", glm::vec3(1.00, 0.44, 0.00));
 	PhongShaderMaterialTexture.SetUniform3f("uTorchLight1.Kd", glm::vec3(1.00, 0.44, 0.00));
 	PhongShaderMaterialTexture.SetUniform3f("uTorchLight1.Ks", glm::vec3(1.00, 0.44, 0.00));
-	PhongShaderMaterialTexture.SetUniform1f("uTorchLight1.Kc", 1.0f);
-	PhongShaderMaterialTexture.SetUniform1f("uTorchLight1.Kl", 0.01f);
-	PhongShaderMaterialTexture.SetUniform1f("uTorchLight1.Kq", 0.005f);
 
 	// Default for point light (Torch 2)
 	PhongShaderMaterialTexture.SetUniform3f("uTorchLight2.Ka", glm::vec3(1.00, 0.44, 0.00));
 	PhongShaderMaterialTexture.SetUniform3f("uTorchLight2.Kd", glm::vec3(1.00, 0.44, 0.00));
 	PhongShaderMaterialTexture.SetUniform3f("uTorchLight2.Ks", glm::vec3(1.00, 0.44, 0.00));
-	PhongShaderMaterialTexture.SetUniform1f("uTorchLight2.Kc", 1.0f);
-	PhongShaderMaterialTexture.SetUniform1f("uTorchLight2.Kl", 0.01f);
-	PhongShaderMaterialTexture.SetUniform1f("uTorchLight2.Kq", 0.005f);
 
 	// Default for point light (Torch 3)
 	PhongShaderMaterialTexture.SetUniform3f("uTorchLight3.Ka", glm::vec3(1.00, 0.44, 0.00));
 	PhongShaderMaterialTexture.SetUniform3f("uTorchLight3.Kd", glm::vec3(1.00, 0.44, 0.00));
 	PhongShaderMaterialTexture.SetUniform3f("uTorchLight3.Ks", glm::vec3(1.00, 0.44, 0.00));
-	PhongShaderMaterialTexture.SetUniform1f("uTorchLight3.Kc", 1.0f);
-	PhongShaderMaterialTexture.SetUniform1f("uTorchLight3.Kl", 0.01f);
-	PhongShaderMaterialTexture.SetUniform1f("uTorchLight3.Kq", 0.005f);
 
 	// Default for point light (Lighthouse top)
 	PhongShaderMaterialTexture.SetUniform3f("uLightHousePointLight.Ka", glm::vec3(1));
@@ -304,8 +286,6 @@ int main()
 	PhongShaderMaterialTexture.SetUniform1f("uLightHousePointLight.Kq", 0.7f);
 
 	// First light from the Lighthouse 
-	PhongShaderMaterialTexture.SetUniform3f("uLighthouseLight1.Position", glm::vec3(999));
-	PhongShaderMaterialTexture.SetUniform3f("uLighthouseLight1.Direction", glm::vec3(999));
 	PhongShaderMaterialTexture.SetUniform3f("uLighthouseLight1.Ka", glm::vec3(0));
 	PhongShaderMaterialTexture.SetUniform3f("uLighthouseLight1.Kd", glm::vec3(1));
 	PhongShaderMaterialTexture.SetUniform3f("uLighthouseLight1.Ks", glm::vec3(1.0f));
@@ -316,8 +296,6 @@ int main()
 	PhongShaderMaterialTexture.SetUniform1f("uLighthouseLight1.OuterCutOff", glm::cos(glm::radians(35.0f)));
 
 	// Second light from the Lighthouse 
-	PhongShaderMaterialTexture.SetUniform3f("uLighthouseLight2.Position", glm::vec3(999));
-	PhongShaderMaterialTexture.SetUniform3f("uLighthouseLight2.Direction", glm::vec3(999));
 	PhongShaderMaterialTexture.SetUniform3f("uLighthouseLight2.Ka", glm::vec3(0));
 	PhongShaderMaterialTexture.SetUniform3f("uLighthouseLight2.Kd", glm::vec3(1));
 	PhongShaderMaterialTexture.SetUniform3f("uLighthouseLight2.Ks", glm::vec3(1));
@@ -328,8 +306,6 @@ int main()
 	PhongShaderMaterialTexture.SetUniform1f("uLighthouseLight2.OuterCutOff", glm::cos(glm::radians(35.0f)));
 
 	// Light from the FlashLight 
-	PhongShaderMaterialTexture.SetUniform3f("uFlashLight.Position", glm::vec3(999));
-	PhongShaderMaterialTexture.SetUniform3f("uFlashLight.Direction", glm::vec3(999));
 	PhongShaderMaterialTexture.SetUniform3f("uFlashLight.Ka", glm::vec3(0));
 	PhongShaderMaterialTexture.SetUniform3f("uFlashLight.Kd", glm::vec3(1));
 	PhongShaderMaterialTexture.SetUniform3f("uFlashLight.Ks", glm::vec3(1));
@@ -423,16 +399,14 @@ int main()
 		if (is_day)
 		{
 			glClearColor(0.53f, 0.81f, 0.98f, 1.0f);
+			CurrentShader->SetUniform3f("uDirLight.Direction", glm::vec3(0, -0.1, 0));
 			CurrentShader->SetUniform3f("uDirLight.Ka", glm::vec3(0.68, 0.70, 0.51));
 			CurrentShader->SetUniform3f("uDirLight.Kd", glm::vec3(0.68, 0.70, 0.51));
 			CurrentShader->SetUniform3f("uDirLight.Ks", glm::vec3(1.0f));
 
 			// Sun
-			CurrentShader->SetUniform3f("uDirLight.Direction", glm::vec3(0, -0.1, 0));
-
 			glm::vec3 point_light_position_sun(0, 25, 0);
 			PhongShaderMaterialTexture.SetUniform1f("uSunLight.Kc", 0.1 / abs(sin(start_time)));
-
 			PhongShaderMaterialTexture.SetUniform1f("uSunLight.Kq", 0.1 / abs(sin(start_time)));
 			CurrentShader->SetUniform3f("uSunLight.Position", point_light_position_sun);
 			model_matrix = glm::mat4(1.0f);
@@ -448,11 +422,9 @@ int main()
 		if (!is_day)
 		{
 			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-
-			double far_far_away_light = 0;
-			CurrentShader->SetUniform3f("uDirLight.Ka", glm::vec3(far_far_away_light));
-			CurrentShader->SetUniform3f("uDirLight.Kd", glm::vec3(far_far_away_light));
-			CurrentShader->SetUniform3f("uDirLight.Ks", glm::vec3(far_far_away_light));
+			CurrentShader->SetUniform3f("uDirLight.Ka", glm::vec3(is_day));
+			CurrentShader->SetUniform3f("uDirLight.Kd", glm::vec3(is_day));
+			CurrentShader->SetUniform3f("uDirLight.Ks", glm::vec3(is_day));
 			CurrentShader->SetUniform3f("uSunLight.Position", glm::vec3(999));
 
 			// Sharks

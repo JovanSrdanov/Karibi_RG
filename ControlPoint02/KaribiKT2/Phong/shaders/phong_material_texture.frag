@@ -170,7 +170,7 @@ void main() {
 	float SpotIntensity2 = clamp((Theta2 - uLighthouseLight2.OuterCutOff) / Epsilon2, 0.0f, 1.0f);
 	vec3 SpotColor2 = SpotIntensity2 * SpotAttenuation2 * (SpotAmbientColor2 + SpotDiffuseColor2 + SpotSpecularColor2);
 
-		// LighthouseLight3
+	// FlashLight
 	vec3 SpotlightVector3 = normalize(uFlashLight.Position - vWorldSpaceFragment);
 
 	float SpotDiffuse3 = max(dot(vWorldSpaceNormal, SpotlightVector3), 0.0f);
@@ -188,8 +188,6 @@ void main() {
 	float Epsilon3 = uFlashLight.InnerCutOff - uFlashLight.OuterCutOff;
 	float SpotIntensity3 = clamp((Theta3 - uFlashLight.OuterCutOff) / Epsilon3, 0.0f, 1.0f);
 	vec3 SpotColor3 = SpotIntensity3 * SpotAttenuation3 * (SpotAmbientColor3 + SpotDiffuseColor3 + SpotSpecularColor3);
-
-
 
 	vec3 FinalColor = DirColor + PtColorSun + PtColorTorch1 + PtColorTorch2 + PtColorTorch3 +PtColorLightHouse + SpotColor1 + SpotColor2+SpotColor3;
 	FragColor = vec4(FinalColor, 1.0f);

@@ -406,8 +406,8 @@ int main()
 
 			// Sun
 			glm::vec3 point_light_position_sun(0, 25, 0);
-			PhongShaderMaterialTexture.SetUniform1f("uSunLight.Kc", 0.1 / abs(sin(start_time)));
-			PhongShaderMaterialTexture.SetUniform1f("uSunLight.Kq", 0.1 / abs(sin(start_time)));
+			CurrentShader->SetUniform1f("uSunLight.Kc", 0.1 / abs(sin(start_time)));
+			CurrentShader->SetUniform1f("uSunLight.Kq", 0.1 / abs(sin(start_time)));
 			CurrentShader->SetUniform3f("uSunLight.Position", point_light_position_sun);
 			model_matrix = glm::mat4(1.0f);
 			model_matrix = glm::translate(model_matrix, point_light_position_sun);
@@ -441,9 +441,7 @@ int main()
 				CurrentShader->SetModel(model_matrix);
 				shark.Render();
 			}
-
 		}
-
 		// Sea
 		DrawSea(CubeVAO, *CurrentShader, SeaDiffuseTexture, SeaSpecularTexture, start_time);
 

@@ -1,11 +1,11 @@
-# Računarska grafika Godina 2022-2022 FTN E2 PRNII  
-Projekat iz predmeta Računarska grafika  
-Fakultet tehničkih nauka   
-Računarstvo i automatika   
-Primenjene računarske nauke i informatika  
+# Computer Graphics Year 2022-2022 FTN E2 PRNII
+Project for the subject Computer Graphics  
+Faculty of Technical Sciences  
+Computer Science and Automation  
+Applied Computer Science and Informatics  
 
 RA 145/2019 - Jovan Srdanov  
-Made in: C++ i OpenGL
+Made in: C++ and OpenGL
 
 Key bindings in ControlPoint01:  
 Toggle clouds: P and O  
@@ -16,7 +16,7 @@ Look: Arrow keys
 Toggle lighthouse and clouds: P and O  
 Toggle night and day: K and L  
 Toggle flashlight: F and G   
-Exit : ESC 
+Exit: ESC 
 
 Showcase:  
 
